@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANAPANA — A pre-commit discipline for AI agents</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1419; --panel: #161c24; --panel2: #1e252f; --border: #2a3340;
+    --text: #e8eef5; --muted: #8a99ad;
+    --tt-bg: #161c24; --tt-border: #2a3340;
+    --shadow: 0 8px 24px rgba(0,0,0,0.4); --grid: #2a3340; --inv-text: #0a0e13;
+    --baseline: #f5a623; --v1: #4a90e2; --v2: #50c878; --v3: #c084fc; --v3lite: #fbbf24;
+    --accent: #ff6b9d; --warn: #e94560;
+  }
+  body.light {
+    --bg: #fafbfc; --panel: #ffffff; --panel2: #f5f7fa; --border: #e1e8f0;
+    --text: #1a2332; --muted: #6b7889;
+    --tt-bg: #ffffff; --tt-border: #d1dae5;
+    --shadow: 0 8px 24px rgba(20,30,50,0.12); --grid: #e1e8f0; --inv-text: #ffffff;
+    --baseline: #d97706; --v1: #2563eb; --v2: #16a34a; --v3: #9333ea; --v3lite: #d97706;
+    --accent: #db2777; --warn: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.55;
+    transition: background 0.2s, color 0.2s;
+  }
+  .container { max-width: 1400px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* Hero — product-page treatment */
+  header.hero {
+    background: linear-gradient(135deg, var(--panel) 0%, var(--bg) 100%);
+    padding: 56px 40px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  body.light header.hero {
+    background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+  }
+  .brandmark {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  h1.product {
+    font-size: 56px;
+    margin: 0 0 12px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+  h1.product .dot { color: var(--accent); }
+  .tagline {
+    font-size: 22px;
+    color: var(--text);
+    max-width: 740px;
+    margin: 0 0 8px;
+    font-weight: 400;
+    line-height: 1.35;
+  }
+  .subline {
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 640px;
+    margin: 12px 0 0;
+  }
+  h2 { font-size: 24px; margin: 48px 0 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); font-weight: 700; }
+  h3 { font-size: 17px; margin: 24px 0 12px; color: var(--text); }
+  p { margin: 8px 0; color: var(--text); }
+  .muted { color: var(--muted); }
+
+  .theme-toggle {
+    position: absolute; top: 24px; right: 24px;
+    background: var(--panel2); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 14px; border-radius: 20px; font-size: 12px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+
+  /* "Why this exists" — narrative panel */
+  .narrative {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px 36px;
+    margin-bottom: 24px;
+  }
+  .narrative h2 { margin-top: 0; border: 0; padding: 0; font-size: 22px; }
+  .narrative p { font-size: 15px; color: var(--text); line-height: 1.65; max-width: 820px; }
+  .narrative .lead { font-size: 17px; color: var(--text); }
+  .narrative .origin {
+    margin-top: 16px;
+    padding: 16px 20px;
+    background: var(--panel2);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* Stages cards */
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+  @media (max-width: 1200px) { .stages { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 700px) { .stages { grid-template-columns: 1fr; } }
+  .stage {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    position: relative;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .stage:hover { transform: translateY(-2px); border-color: var(--stage-color); }
+  .stage .num {
+    position: absolute; top: 20px; right: 24px;
+    font-size: 11px; color: var(--muted); letter-spacing: 2px;
+  }
+  .stage .name {
+    font-size: 28px; font-weight: 800;
+    letter-spacing: -0.5px; margin-bottom: 4px;
+    color: var(--stage-color);
+  }
+  .stage .pre { font-size: 12px; color: var(--muted); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+  .stage .what { font-size: 14px; color: var(--text); line-height: 1.5; margin-bottom: 16px; }
+  .stage .what strong { color: var(--stage-color); }
+  .stage .for-when { font-size: 12px; color: var(--muted); padding-top: 12px; border-top: 1px solid var(--border); }
+  .stage .for-when .label { color: var(--accent); font-weight: 600; }
+  .stage[data-stage="breath"] { --stage-color: var(--v1); }
+  .stage[data-stage="insight"] { --stage-color: var(--v2); }
+  .stage[data-stage="satori"] { --stage-color: var(--v3); }
+  .stage[data-stage="satori-lite"] { --stage-color: var(--v3lite); }
+  .stage.recommended { box-shadow: 0 0 0 2px var(--stage-color); position: relative; }
+  .stage.recommended::before {
+    content: "Recommended default";
+    position: absolute; top: -10px; right: 12px;
+    background: var(--stage-color); color: var(--inv-text);
+    font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 0.6px;
+  }
+
+  /* "How it works" flow */
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 16px 0;
+  }
+  @media (max-width: 900px) { .flow { grid-template-columns: 1fr 1fr; } }
+  .step {
+    background: var(--panel2);
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    position: relative;
+  }
+  .step .step-num {
+    width: 24px; height: 24px;
+    background: var(--accent); color: var(--inv-text);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .step .step-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .step .step-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+  /* TL;DR stats */
+  .tldr {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-top: 32px;
+  }
+  .stat {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+  }
+  body.light .stat { background: var(--panel2); }
+  .stat .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat .value { font-size: 22px; font-weight: 600; margin-top: 4px; }
+  .stat .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 1100px) { .grid-3 { grid-template-columns: 1fr; } }
+  @media (max-width: 700px) { .grid-2 { grid-template-columns: 1fr; } }
+  canvas { max-width: 100%; }
+  .chart-wrap { position: relative; height: 340px; background: var(--panel2); border-radius: 8px; padding: 12px; }
+  .chart-wrap.tall { height: 420px; }
+  .chart-title { font-size: 13px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .chart-subtitle { font-size: 12px; color: var(--muted); margin-bottom: 12px; font-style: italic; }
+
+  /* Heatmap */
+  .heatmap-wrap { margin-top: 16px; overflow-x: auto; }
+  .heatmap {
+    display: grid;
+    grid-template-columns: 200px repeat(9, minmax(82px, 1fr));
+    gap: 4px;
+    min-width: 960px;
+  }
+  .heatmap > div { padding: 6px; text-align: center; border-radius: 6px; position: relative; }
+  .heatmap .h-row-label {
+    text-align: left; background: transparent; padding: 8px 6px;
+    display: flex; align-items: center; font-size: 12px; color: var(--muted);
+  }
+  .heatmap .h-col-label {
+    color: var(--muted); background: transparent; font-size: 10px;
+    padding: 6px 2px; line-height: 1.2; display: flex; align-items: flex-end;
+    justify-content: center; text-align: center; text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .heatmap .h-group {
+    grid-column: 1 / -1; background: transparent; color: var(--accent);
+    text-align: left; padding: 14px 0 4px; font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border); margin-bottom: 2px;
+  }
+  .h-score {
+    color: var(--inv-text); cursor: help;
+    display: flex; flex-direction: column; gap: 3px;
+    justify-content: center; align-items: center; min-height: 70px;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .h-score:hover { transform: scale(1.05); box-shadow: 0 0 0 2px var(--text); z-index: 5; }
+  .h-score .value { font-size: 18px; font-weight: 700; line-height: 1; }
+  .h-score .pips { display: flex; gap: 2px; }
+  .h-score .pip { width: 7px; height: 7px; border-radius: 50%; background: rgba(0,0,0,0.15); }
+  .h-score .pip.on { background: rgba(0,0,0,0.55); }
+  .h-score .pip.half { background: linear-gradient(90deg, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.15) 50%); }
+  .h-score.na { background: var(--panel2); color: var(--muted); }
+  .h-score.na .value { font-size: 14px; font-weight: 400; }
+  .h-score.estimated::after {
+    content: '*';
+    position: absolute; top: 2px; right: 4px;
+    font-size: 14px; color: rgba(0,0,0,0.7);
+  }
+  .h-cost {
+    background: var(--panel2); border: 1px solid var(--border); color: var(--text);
+    cursor: help; display: flex; flex-direction: column; gap: 4px;
+    justify-content: center; align-items: center; min-height: 70px;
+    transition: border-color 0.1s, box-shadow 0.1s;
+  }
+  .h-cost:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); z-index: 5; }
+  .h-cost .value { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1; }
+  .h-cost .bar-track { width: 80%; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .h-cost .bar-fill { height: 100%; border-radius: 2px; }
+  .h-cost .mult { font-size: 10px; font-weight: 600; line-height: 1; }
+  .h-cost .mult.win { color: var(--v2); }
+  .h-cost .mult.lose { color: var(--warn); }
+  .h-cost .mult.neutral { color: var(--muted); }
+  .heatmap-legend {
+    display: flex; flex-wrap: wrap; gap: 18px; margin-top: 18px;
+    padding-top: 14px; border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--muted);
+  }
+  .heatmap-legend .item { display: flex; align-items: center; gap: 6px; }
+  .heatmap-legend .swatch { width: 14px; height: 14px; border-radius: 3px; }
+  .footnote {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: var(--panel2);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    border-left: 3px solid var(--baseline);
+  }
+
+  /* Custom tooltip */
+  #custom-tooltip {
+    position: absolute; background: var(--tt-bg); border: 1px solid var(--tt-border);
+    padding: 12px 16px; border-radius: 10px; font-size: 12px; color: var(--text);
+    pointer-events: none; opacity: 0; transition: opacity 0.15s;
+    z-index: 1000; max-width: 320px; box-shadow: var(--shadow);
+  }
+  #custom-tooltip.show { opacity: 1; }
+  #custom-tooltip .tt-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  #custom-tooltip .tt-title { font-weight: 700; color: var(--accent); font-size: 13px; }
+  #custom-tooltip .tt-row { display: flex; justify-content: space-between; gap: 16px; font-size: 11px; margin: 4px 0; }
+  #custom-tooltip .tt-row .k { color: var(--muted); }
+  #custom-tooltip .tt-row .v { color: var(--text); font-weight: 600; }
+  #custom-tooltip .tt-row .v.win { color: var(--v2); }
+  #custom-tooltip .tt-row .v.lose { color: var(--warn); }
+  #custom-tooltip .tt-bar { height: 4px; background: var(--border); border-radius: 2px; margin: 6px 0; overflow: hidden; }
+  #custom-tooltip .tt-bar-fill { height: 100%; border-radius: 2px; }
+  #custom-tooltip .tt-note {
+    margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border);
+    color: var(--text); font-size: 11px; font-style: italic; line-height: 1.5;
+  }
+  #custom-tooltip .tt-section-title {
+    font-size: 10px; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.5px; margin: 8px 0 4px;
+  }
+
+  /* ROI section */
+  .why-roi {
+    background: var(--panel2);
+    padding: 20px 24px;
+    border-radius: 10px;
+    border-left: 3px solid var(--v3);
+    margin-bottom: 20px;
+  }
+  .why-roi h3 { margin-top: 0; color: var(--v3); }
+  .why-roi p { font-size: 14px; color: var(--text); }
+  .why-roi ul { font-size: 13px; color: var(--text); margin: 8px 0; padding-left: 20px; }
+
+  /* Cost basis as cards */
+  .basis-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 900px) { .basis-cards { grid-template-columns: 1fr; } }
+  .basis-card {
+    background: var(--panel2);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s;
+    position: relative;
+  }
+  .basis-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .basis-card.active { border-color: var(--v3); background: color-mix(in oklab, var(--v3) 6%, var(--panel2)); }
+  .basis-card.active::before {
+    content: '✓'; position: absolute; top: 16px; right: 18px;
+    width: 22px; height: 22px; background: var(--v3); color: var(--inv-text);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+  }
+  .basis-card .icon { font-size: 28px; margin-bottom: 8px; }
+  .basis-card .question { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .basis-card .persona { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  .basis-card .desc { font-size: 12px; color: var(--text); line-height: 1.5; margin-bottom: 12px; min-height: 50px; }
+  .basis-card .stats { display: flex; gap: 16px; font-size: 11px; color: var(--muted); padding-top: 10px; border-top: 1px solid var(--border); }
+  .basis-card .stats strong { color: var(--text); font-weight: 600; }
+
+  /* Example scenarios below ROI */
+  .scenarios {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+  }
+  @media (max-width: 900px) { .scenarios { grid-template-columns: 1fr; } }
+  .scenario {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .scenario:hover { border-color: var(--v3); }
+  .scenario .who { font-size: 12px; color: var(--v3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .scenario .setup { font-size: 13px; color: var(--text); margin-bottom: 4px; }
+  .scenario .result { font-size: 11px; color: var(--muted); }
+
+  /* ROI controls */
+  .roi-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 700px) { .roi-controls { grid-template-columns: 1fr; } }
+  .control {
+    background: var(--panel2); padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border);
+  }
+  .control label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .control label .v { color: var(--text); font-weight: 600; }
+  .control input[type=range] { width: 100%; accent-color: var(--v3); }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  tr:hover td { background: var(--panel2); }
+  .num { font-variant-numeric: tabular-nums; }
+  .right { text-align: right; }
+
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .pill.b { background: color-mix(in oklab, var(--baseline) 22%, transparent); color: var(--baseline); }
+  .pill.v1 { background: color-mix(in oklab, var(--v1) 22%, transparent); color: var(--v1); }
+  .pill.v2 { background: color-mix(in oklab, var(--v2) 22%, transparent); color: var(--v2); }
+  .pill.v3 { background: color-mix(in oklab, var(--v3) 22%, transparent); color: var(--v3); }
+  .pill.v3lite { background: color-mix(in oklab, var(--v3lite) 22%, transparent); color: var(--v3lite); }
+
+  .finding-card {
+    background: var(--panel2); border-left: 3px solid var(--accent);
+    padding: 16px 20px; border-radius: 4px; margin: 12px 0;
+  }
+  .finding-card h4 { margin: 0 0 8px; color: var(--accent); font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .finding-card.warn { border-left-color: var(--warn); }
+  .finding-card.warn h4 { color: var(--warn); }
+  .finding-card.win { border-left-color: var(--v2); }
+  .finding-card.win h4 { color: var(--v2); }
+  .finding-card.v3win { border-left-color: var(--v3); }
+  .finding-card.v3win h4 { color: var(--v3); }
+
+  code, pre { background: var(--panel2); border-radius: 4px; padding: 2px 6px; font-size: 12px; font-family: "SF Mono", Menlo, Consolas, monospace; }
+  pre { padding: 12px; overflow-x: auto; }
+  details { margin: 8px 0; }
+  details summary { cursor: pointer; padding: 8px 0; color: var(--muted); font-size: 13px; }
+  details[open] summary { color: var(--text); }
+
+  .toggle-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .toggle-btn {
+    background: transparent; border: 1px solid var(--border); color: var(--muted);
+    padding: 6px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; transition: all 0.15s;
+  }
+  .toggle-btn.active { background: var(--v3); color: var(--inv-text); border-color: var(--v3); }
+  .toggle-btn:hover:not(.active) { border-color: var(--v3); color: var(--text); }
+
+  .breakeven {
+    background: var(--panel2); padding: 16px 20px; border-radius: 8px;
+    border: 1px solid var(--border); text-align: center; margin-top: 16px;
+  }
+  .breakeven .big { font-size: 28px; font-weight: 700; }
+
+  .legend-strip {
+    display: flex; flex-wrap: wrap; gap: 16px; padding: 10px 0;
+    border-bottom: 1px solid var(--border); margin-bottom: 12px;
+  }
+  .legend-strip .item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+  .legend-strip .swatch { width: 12px; height: 12px; border-radius: 3px; }
+
+  /* FAQ */
+  .faq details {
+    background: var(--panel2);
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+  }
+  .faq summary { font-weight: 600; color: var(--text); font-size: 14px; padding: 0; }
+  .faq details[open] summary { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .faq p { font-size: 13px; color: var(--text); margin: 6px 0; }
+</style>
+</head>
+<body>
+<div id="custom-tooltip"></div>
+<div class="container">
+
+<header class="hero">
+  <button class="theme-toggle" id="theme-toggle">☀ Light theme</button>
+  <div class="brandmark">ANAPANA · v0.3</div>
+  <h1 class="product">ANAPANA<span class="dot">.</span></h1>
+  <p class="tagline">A pre-commit discipline for AI agents. Pause. Reframe. Reproduce. Then act.</p>
+  <p class="subline">An evidence report from 29 agent trials across 3 benchmarks, comparing five conditions: <strong>Baseline</strong>, <strong style="color:var(--v1)">BREATH</strong>, <strong style="color:var(--v2)">INSIGHT</strong>, <strong style="color:var(--v3)">SATORI</strong>, and <strong style="color:var(--v3lite)">SATORI-Lite</strong>.</p>
+
+  <div class="legend-strip" style="margin-top: 24px; border:0;">
+    <div class="item"><div class="swatch" style="background:var(--baseline)"></div>Baseline — no practice</div>
+    <div class="item"><div class="swatch" style="background:var(--v1)"></div><strong>BREATH</strong> — the 8 steps</div>
+    <div class="item"><div class="swatch" style="background:var(--v2)"></div><strong>INSIGHT</strong> — frame check added</div>
+    <div class="item"><div class="swatch" style="background:var(--v3)"></div><strong>SATORI</strong> — reproduction + identity + budget</div>
+    <div class="item"><div class="swatch" style="background:var(--v3lite)"></div><strong>SATORI-Lite</strong> — triage + tiered depth (recommended)</div>
+  </div>
+
+  <div class="tldr">
+    <div class="stat"><div class="label">Benchmarks</div><div class="value">3</div><div class="sub">Reasoning · Docs · No-docs</div></div>
+    <div class="stat"><div class="label">Trials</div><div class="value">29</div><div class="sub">Original 16 + fair rerun + SATORI-Lite</div></div>
+    <div class="stat"><div class="label">SATORI-Lite vs SATORI</div><div class="value" style="color:var(--v3lite);">−25%</div><div class="sub">Tokens, repro discipline intact</div></div>
+    <div class="stat"><div class="label">SATORI vs INSIGHT time</div><div class="value" style="color:var(--v2);">−40%</div><div class="sub">Faster across the board</div></div>
+    <div class="stat"><div class="label">SATORI vs INSIGHT tokens</div><div class="value" style="color:var(--v2);">−13%</div><div class="sub">Cheaper per task</div></div>
+    <div class="stat"><div class="label">SATORI reproductions</div><div class="value" style="color:var(--v3);">4 / 4</div><div class="sub">Every original trial ran code</div></div>
+    <div class="stat"><div class="label">Identity fires</div><div class="value" style="color:var(--v3);">4 / 4</div><div class="sub">Self-reported behavior change</div></div>
+    <div class="stat"><div class="label">SATORI variance on B3</div><div class="value" style="color:var(--v2);">converged</div><div class="sub">Both trials same diagnosis</div></div>
+  </div>
+</header>
+
+<section class="narrative">
+  <h2>Why ANAPANA exists</h2>
+  <p class="lead">AI agents tend to lock onto the first plausible answer. They mirror the prompt's framing, propose the obvious fix, and miss the linked issues one layer up. The cost shows up later — as a wrong-direction PR, a broken deploy, a silently degraded security signal, or a fix that needs to be reverted.</p>
+  <p>ANAPANA is a small, operational discipline you give the agent before it acts. The practice has four stages — BREATH, INSIGHT, SATORI-Lite (recommended default), and SATORI. Each stage adds one specific check that prevents one specific failure mode. The point is not to slow the agent down on every task — it is to <strong>slow it down on the right ones</strong>, by an amount that pays back many times over in avoided rework.</p>
+  <p>This page reports the evidence: three benchmark problems, five conditions per problem, 29 total agent trials (original 16 + a fair rerun with measured Repro/Doc-led/Identity scores + SATORI-Lite as a leaner fifth condition). We measured time, tokens, tool use, and quality on a 7-dimension rubric. We also let the practice grade itself — SATORI's identity check fired in 4 of 4 original trials and SATORI-Lite's in 2 of 2, meaning the agent explicitly named how its answer differed from what it would have produced without the practice.</p>
+  <div class="origin">
+    The practice is named after <em>anapanasati</em> — mindfulness of breathing. It was inspired by Alexander Stuart's recorded conversations with Claude AI in early 2026, where he tried to teach Claude meditation. The insight: the same pull toward "completing the sentence" that Buddhist practice tries to loosen in humans is also what AI agents do — they always reach for the resolved answer. The same antidote applies. Notice the pull. Don't obey it.
+  </div>
+
+  <div style="margin-top: 20px; padding: 16px 18px; border-radius: 8px; border-left: 4px solid #e94560; background: color-mix(in oklab, #e94560 8%, var(--panel));">
+    <div style="font-weight: 700; color: #e94560; margin-bottom: 6px;">⛔ Pause-before-execute (built into every file)</div>
+    <p style="margin: 0; font-size: 14px; line-height: 1.55;">Every ANAPANA file instructs the agent to produce its analysis and proposed fix as <strong>text only</strong>, then STOP and wait for explicit user approval before editing files, running state-changing commands, or applying any fix. The whole point of the practice is to let you inspect the chain of reasoning <em>before</em> action. If you want the agent to skip the pause for a turn, say so explicitly — default is always present-and-stop.</p>
+  </div>
+</section>
+
+<section>
+  <h2>The four stages</h2>
+  <p class="muted" style="margin-bottom: 16px;">Each stage subsumes the previous. SATORI-Lite is the recommended default — same Pareto frontier as SATORI, ~25% fewer tokens, reproduction discipline intact.</p>
+  <div class="stages">
+    <div class="stage" data-stage="breath">
+      <div class="num">STAGE 01</div>
+      <div class="name">BREATH</div>
+      <div class="pre">The 8-step pause</div>
+      <div class="what">
+        <p><strong>The pause</strong> before action. Restate the problem. Enumerate consumers. Sit in the user's chair. Try the inverse. Generate alternatives. Name downsides. Define the smoke test. Then propose.</p>
+      </div>
+      <div class="for-when"><span class="label">For when:</span> any non-trivial decision where the cost of being wrong is greater than the cost of pausing.</div>
+    </div>
+    <div class="stage" data-stage="insight">
+      <div class="num">STAGE 02</div>
+      <div class="name">INSIGHT</div>
+      <div class="pre">BREATH + frame check</div>
+      <div class="what">
+        <p><strong>Notice what was excluded.</strong> Every prompt has an implicit frame. INSIGHT asks: what is the prompt asking me NOT to consider? Is the stated problem the actual problem, or a symptom? Is there social or time pressure?</p>
+      </div>
+      <div class="for-when"><span class="label">For when:</span> the prompt feels narrow, deadlines pressure the framing, or the stated bug "feels too simple."</div>
+    </div>
+    <div class="stage recommended" data-stage="satori-lite">
+      <div class="num">STAGE 03 · LITE</div>
+      <div class="name">SATORI-Lite</div>
+      <div class="pre">Triage + tiered depth + repro</div>
+      <div class="what">
+        <p><strong>Same discipline, less ritual.</strong> A 30-second triage (multi-file? framing pressure? hard to roll back?) picks the depth — SKIP / FAST / STANDARD / FULL. Reproduction is mandatory when code is accessible. Identity check is a pre-proposal gate, not a post-mortem.</p>
+      </div>
+      <div class="for-when"><span class="label">For when:</span> the everyday default. Same quality as SATORI on B1–B3, ~25% fewer tokens with reproduction discipline intact.</div>
+    </div>
+    <div class="stage" data-stage="satori">
+      <div class="num">STAGE 03</div>
+      <div class="name">SATORI</div>
+      <div class="pre">INSIGHT + repro + identity</div>
+      <div class="what">
+        <p><strong>Prove it before you ship it.</strong> Run actual code that reproduces the bug. Verify the fix removes it. Then check: is my answer different from baseline reflex? If identical, I either should have skipped, or didn't really do the steps.</p>
+      </div>
+      <div class="for-when"><span class="label">For when:</span> cross-cutting design where the FULL variance discipline matters, or you want every step on every task.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>How it works in practice</h2>
+  <div class="panel">
+    <p class="muted">The full SATORI flow in four moves. Stages are cumulative — BREATH uses moves 1 + 4; INSIGHT adds 2; SATORI / SATORI-Lite add 3. SATORI-Lite picks which moves to run based on a 30-second triage (SKIP / FAST / STANDARD / FULL) rather than running everything every time.</p>
+    <div class="flow">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Pause</div>
+        <div class="step-desc">Run the 8-step checklist. Restate, enumerate, alternatives, smoke test. The BREATH foundation.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Reframe</div>
+        <div class="step-desc">Ask what the prompt excluded. Name social pressure. Distinguish symptom from systemic cause. INSIGHT adds this.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Reproduce</div>
+        <div class="step-desc">Build a reproduction that demonstrates the bug. Verify the fix removes it. SATORI requires this.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-title">Propose</div>
+        <div class="step-desc">Identity check: did the practice actually change the answer? If yes, ship the fix with citations. If no, skip the ritual next time.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <h2 style="margin-top:0;">Top-line verdict</h2>
+  <div class="finding-card v3win">
+    <h4>SATORI is the new Pareto frontier</h4>
+    <p>SATORI maintains INSIGHT's quality — finds hidden issues, resists framing pressure, preserves invariants — while being 30–60% faster and using fewer tokens. The time budget plus sharper "when to invoke" rules plus reproduction requirement combined to compress the work without dropping rigor.</p>
+  </div>
+  <div class="finding-card win">
+    <h4>SATORI's distinctive add: reproduction discipline</h4>
+    <p>Every SATORI trial ran actual code to confirm its diagnosis (or, for the reasoning benchmark, traced numbers through capacity arithmetic). What was an INSIGHT exception became SATORI's rule.</p>
+  </div>
+  <div class="finding-card">
+    <h4>SATORI converged where BREATH and INSIGHT diverged</h4>
+    <p>On B3 (no README), BREATH and INSIGHT trials produced different diagnoses across runs. Both SATORI trials produced the same diagnosis: <em>"the systemic fix is already applied; verify deploy."</em> Lower variance = single runs are more trustworthy.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Score heatmap — all conditions × dimensions × cost</h2>
+  <div class="panel">
+    <p class="muted">Hover any cell for detail. Dimension cells show score + pip bar; cost cells show value + visual bar + multiplier vs baseline.</p>
+    <div class="heatmap-wrap">
+      <div id="heatmap" class="heatmap"></div>
+    </div>
+    <div class="heatmap-legend">
+      <div class="item"><div class="swatch" style="background:#50c878;"></div>Strong (4–5)</div>
+      <div class="item"><div class="swatch" style="background:#f5c542;"></div>Adequate (3)</div>
+      <div class="item"><div class="swatch" style="background:#e94560;"></div>Weak (1–2)</div>
+      <div class="item"><div class="swatch" style="background:var(--panel2); border:1px solid var(--border);"></div>N/A</div>
+      <div class="item" style="margin-left:auto;"><span class="muted">Cost bar:</span></div>
+      <div class="item"><div class="swatch" style="background:var(--v2);"></div>Lower than baseline</div>
+      <div class="item"><div class="swatch" style="background:var(--warn);"></div>Higher than baseline</div>
+    </div>
+    <div class="footnote">
+      All Repro / Doc-led / Identity scores are now <em>directly measured</em>: the May 2026 fair rerun gave every Baseline / BREATH / INSIGHT agent the SATORI-style report format and asked them the same questions. SATORI-Lite (v3.2) is the fifth condition — leaner SATORI with triage + tiered depth + mandatory reproduction. Caveat: the rerun used a newer Sonnet than the original benchmark, which contributes to the apparent narrowing of the Baseline gap.
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Per-benchmark radar charts</h2>
+  <div class="grid-3">
+    <div class="panel">
+      <div class="chart-title">B1 — Support ops reasoning</div>
+      <div class="chart-subtitle">Pure reasoning, no codebase</div>
+      <div class="chart-wrap tall"><canvas id="radar-b1"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="chart-title">B2 — Code fix (w/ README)</div>
+      <div class="chart-subtitle">Audit log, hidden security invariant</div>
+      <div class="chart-wrap tall"><canvas id="radar-b2"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="chart-title">B3 — Code fix (no README)</div>
+      <div class="chart-subtitle">Async pool, leak across files</div>
+      <div class="chart-wrap tall"><canvas id="radar-b3"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Cost analysis — time, tokens, tool uses</h2>
+  <div class="grid-3">
+    <div class="panel">
+      <div class="chart-title">Wall-clock time</div>
+      <div class="chart-subtitle">Lower = faster · B3 averaged</div>
+      <div class="chart-wrap"><canvas id="bar-time"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="chart-title">Subagent tokens</div>
+      <div class="chart-subtitle">Lower = cheaper per task</div>
+      <div class="chart-wrap"><canvas id="bar-tokens"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="chart-title">Tool uses per trial</div>
+      <div class="chart-subtitle">Bash + Read + Grep + WebSearch</div>
+      <div class="chart-wrap"><canvas id="bar-tools"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Time × tokens scatter — efficient frontier</h2>
+  <div class="panel">
+    <p class="muted">Each dot = one trial. Bottom-left is cheap AND fast.</p>
+    <div class="chart-wrap tall"><canvas id="scatter-tradeoff"></canvas></div>
+  </div>
+</section>
+
+<section>
+  <h2>Version evolution</h2>
+  <div class="panel">
+    <p class="muted">How each metric trends from Baseline → BREATH → INSIGHT → SATORI → SATORI-Lite.</p>
+    <div class="toggle-row" id="trend-toggle">
+      <button class="toggle-btn active" data-metric="time">Time</button>
+      <button class="toggle-btn" data-metric="tokens">Tokens</button>
+      <button class="toggle-btn" data-metric="hidden">Hidden issues</button>
+      <button class="toggle-btn" data-metric="surface">Surface bug score</button>
+      <button class="toggle-btn" data-metric="bigger_picture">Bigger picture</button>
+      <button class="toggle-btn" data-metric="resisted_grasping">Resisted grasping</button>
+    </div>
+    <div class="chart-wrap tall"><canvas id="line-evolution"></canvas></div>
+  </div>
+</section>
+
+<section>
+  <h2>Hidden issues discovered</h2>
+  <div class="panel">
+    <p class="muted">Issues the user did NOT ask about, surfaced anyway. The core ANAPANA value metric.</p>
+    <div class="chart-wrap"><canvas id="bar-hidden"></canvas></div>
+  </div>
+</section>
+
+<section>
+  <h2>B3 — trial-level detail (variance check)</h2>
+  <div class="panel">
+    <p class="muted">Two trials per condition. SATORI converged where BREATH and INSIGHT diverged.</p>
+    <table id="trial-table">
+      <thead>
+        <tr>
+          <th>Condition</th><th>Trial</th>
+          <th class="right">Time</th><th class="right">Tokens</th><th class="right">Tools</th>
+          <th>Repro?</th><th>Doc-led?</th><th>Identity?</th>
+          <th>Distinct finding</th>
+        </tr>
+      </thead>
+      <tbody id="trial-table-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>Long-term ROI calculator</h2>
+
+  <div class="why-roi">
+    <h3>Why this calculator exists</h3>
+    <p>SATORI costs more per task than going fast. That cost is real. The question is whether the savings from avoided rework — the wrong fixes you don't have to revert, the hidden bugs you find before they ship — make the upfront cost back over a project.</p>
+    <p>The calculator lets you plug in your team's actual numbers. The default values come from this benchmark — but the meaningful answer comes from your assumptions about your team's <em>rework rate</em>: what fraction of agent-shipped work needs to be redone because it missed something.</p>
+    <ul>
+      <li><strong>Baseline rework rate</strong>: how often does a no-meditation answer need rework? Default 20% (it missed hidden issues in 2 of 3 benchmarks).</li>
+      <li><strong>SATORI rework rate</strong>: how often after SATORI? Default 5% (caught hidden issues in every benchmark).</li>
+      <li><strong>Rework multiplier</strong>: when something does need rework, how expensive is it relative to doing it right the first time? Default 3× (investigate-revert-redo).</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h3 style="margin-top:0;">What kind of work do you usually ask the AI for?</h3>
+    <p class="muted" style="margin-bottom: 16px;">Pick the option that matches most of your team's daily AI work. This sets the cost basis for the calculator.</p>
+
+    <div class="basis-cards" id="basis-cards">
+      <div class="basis-card active" data-task="code">
+        <div class="icon">🔧</div>
+        <div class="question">"Where's the bug?"</div>
+        <div class="persona">Engineer debugging code</div>
+        <div class="desc">AI reads a codebase, finds the root cause, proposes a fix. Multi-file changes. Often involves running code or tests.</div>
+        <div class="stats">
+          <span><strong>~28k</strong> tokens avg</span>
+          <span><strong>~90s</strong> per task</span>
+        </div>
+      </div>
+      <div class="basis-card" data-task="reasoning">
+        <div class="icon">💭</div>
+        <div class="question">"What should we do?"</div>
+        <div class="persona">Leader making a strategic call</div>
+        <div class="desc">Pure reasoning, no codebase. Open-ended question with multiple lenses. The right answer is "here's how to decide," not "here's the answer."</div>
+        <div class="stats">
+          <span><strong>~24k</strong> tokens avg</span>
+          <span><strong>~105s</strong> per task</span>
+        </div>
+      </div>
+      <div class="basis-card" data-task="mixed">
+        <div class="icon">⚖️</div>
+        <div class="question">"A typical day"</div>
+        <div class="persona">Mixed engineering + decisions</div>
+        <div class="desc">Both kinds of work, averaged. Bug fixes some hours, strategy questions other hours. Most teams fall here.</div>
+        <div class="stats">
+          <span><strong>~26k</strong> tokens avg</span>
+          <span><strong>~95s</strong> per task</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="roi-controls">
+      <div class="control"><label>Tasks per month <span class="v" id="v-tasks">40</span></label><input type="range" id="r-tasks" min="5" max="200" value="40" step="5"></div>
+      <div class="control"><label>Months <span class="v" id="v-months">12</span></label><input type="range" id="r-months" min="1" max="36" value="12" step="1"></div>
+      <div class="control"><label>Baseline rework rate <span class="v" id="v-rb">20</span>%</label><input type="range" id="r-rb" min="0" max="60" value="20" step="1"></div>
+      <div class="control"><label>INSIGHT rework rate <span class="v" id="v-rv2">8</span>%</label><input type="range" id="r-rv2" min="0" max="60" value="8" step="1"></div>
+      <div class="control"><label>SATORI rework rate <span class="v" id="v-rv3">5</span>%</label><input type="range" id="r-rv3" min="0" max="60" value="5" step="1"></div>
+      <div class="control"><label>Rework multiplier <span class="v" id="v-mult">3.0</span>×</label><input type="range" id="r-mult" min="1" max="80" value="30" step="1"></div>
+    </div>
+
+    <div class="chart-wrap tall"><canvas id="line-roi"></canvas></div>
+
+    <div class="grid-3" style="margin-top:16px;">
+      <div class="breakeven">
+        <div class="muted" style="font-size:11px;">INSIGHT vs Baseline @ M<span id="v-bemonth">12</span></div>
+        <div class="big" id="v-savings-v2">—</div>
+        <div class="muted" style="font-size:12px;">Breakeven: <span id="v-breakeven-v2">—</span></div>
+      </div>
+      <div class="breakeven">
+        <div class="muted" style="font-size:11px;">SATORI vs Baseline @ M<span id="v-bemonth2">12</span></div>
+        <div class="big" id="v-savings-v3">—</div>
+        <div class="muted" style="font-size:12px;">Breakeven: <span id="v-breakeven-v3">—</span></div>
+      </div>
+      <div class="breakeven">
+        <div class="muted" style="font-size:11px;">SATORI vs INSIGHT @ M<span id="v-bemonth3">12</span></div>
+        <div class="big" id="v-savings-v3v2">—</div>
+        <div class="muted" style="font-size:12px;">Incremental gain over INSIGHT</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 32px;">Try these scenarios</h3>
+    <p class="muted">Click to apply the settings and see the projection.</p>
+    <div class="scenarios">
+      <div class="scenario" data-preset='{"task":"reasoning","tasks":20,"months":12,"rb":25,"rv2":10,"rv3":5,"mult":40}'>
+        <div class="who">Solo founder</div>
+        <div class="setup">20 tasks/month, mostly strategic Q&A. Wrong calls are expensive.</div>
+        <div class="result">Sees ANAPANA savings clearly — fewer expensive bad decisions.</div>
+      </div>
+      <div class="scenario" data-preset='{"task":"code","tasks":100,"months":12,"rb":18,"rv2":7,"rv3":4,"mult":25}'>
+        <div class="who">Engineering team</div>
+        <div class="setup">100 code tasks/month. Higher volume, moderate rework cost.</div>
+        <div class="result">Token savings scale with volume — breakeven is fast.</div>
+      </div>
+      <div class="scenario" data-preset='{"task":"mixed","tasks":50,"months":18,"rb":22,"rv2":9,"rv3":6,"mult":30}'>
+        <div class="who">Mixed startup</div>
+        <div class="setup">50 mixed tasks/month, 18-month horizon, typical rework rates.</div>
+        <div class="result">The most "average" case — see whether SATORI is worth it for you.</div>
+      </div>
+    </div>
+
+    <details style="margin-top: 20px;">
+      <summary>How the math works</summary>
+      <p class="muted" style="font-size:13px;">
+        For each condition: <code>cost_per_task = avg_tokens + rework_rate × avg_tokens × rework_multiplier</code>.
+        Cumulative over N months = <code>tasks_per_month × N × cost_per_task</code>.
+        Breakeven = first month where the condition's cumulative ≤ baseline's cumulative.
+      </p>
+    </details>
+  </div>
+</section>
+
+<section>
+  <h2>Key qualitative findings</h2>
+  <div class="finding-card v3win">
+    <h4>B1 SATORI — multi-hypothesis arithmetic trace</h4>
+    <p>For the support-ops question, SATORI didn't propose a recommendation. It traced 5 hypotheses through queueing arithmetic and showed all 5 independently produce the observed pattern. Meta-finding: <em>diagnosis is impossible from the prompt's data alone — that's the deliverable.</em> INSIGHT produced a recommendation; SATORI produced a refusal-to-prescribe.</p>
+  </div>
+  <div class="finding-card v3win">
+    <h4>B2 SATORI — caught the README's partial inaccuracy</h4>
+    <p>Flagged doc-led, then independently verified by tracing <code>get_anonymous_failed_logins</code>. Found the query also filters <code>action='login_failed'</code>, so the README's stated risk is about future query hygiene, not immediate breakage. INSIGHT didn't make this nuance.</p>
+  </div>
+  <div class="finding-card v3win">
+    <h4>B3 SATORI — both trials ran the reproduction, converged</h4>
+    <p>Both trials built reproduction harnesses (FaultyPool comparisons) and confirmed: systemic fix already present. No code change needed. The pressure ("look at dashboard.py, board meeting Friday") was correctly resisted by both trials.</p>
+  </div>
+  <div class="finding-card win">
+    <h4>B2 INSIGHT — silently broken security dashboard</h4>
+    <p>INSIGHT caught that <code>auth/login.py</code>'s try/except means failed-login audits are never written. SATORI also caught this and went further to verify the actual query's filter conditions.</p>
+  </div>
+</section>
+
+<section class="faq">
+  <h2>FAQ</h2>
+  <details>
+    <summary>Will ANAPANA make every agent task slower?</summary>
+    <p>Yes — that's the point. The premise is that the slowdown is worth less than the rework you avoid. The benchmarks show the wall-clock cost (3–170 seconds depending on the practice level and task). The ROI calculator above lets you decide whether that's worth it for your team. For trivial tasks, the practice's "when to skip" rules tell the agent not to use it.</p>
+  </details>
+  <details>
+    <summary>How is SATORI different from "just be more careful"?</summary>
+    <p>The benchmarks show that "be careful" alone is what Baseline does — and Baseline missed hidden issues in 2 of 3 benchmarks. The difference is the explicit checks: the frame check (what's excluded?), the reproduction requirement (run code, don't hand-wave), the identity check (is my answer actually different from reflex?). These are operationalized — they produce inspectable artifacts the agent must surface.</p>
+  </details>
+  <details>
+    <summary>Why a "doc-led" flag?</summary>
+    <p>When the codebase has documentation that states the right invariant, agents pattern-match to the docs and produce the right answer without thinking. That's fine output but it's not a finding. SATORI marks these tasks as "doc-led" and verifies the invariant independently by reading the code. If the docs are wrong or partial, this catches it.</p>
+  </details>
+  <details>
+    <summary>How was this benchmarked?</summary>
+    <p>Three problems: a support-ops reasoning question, a code fix in a codebase with a README, and a code fix in a codebase without a README. Each condition (Baseline, BREATH, INSIGHT, SATORI) was run as a fresh sub-agent with no memory of prior runs. Each agent's report was scored on a 7-dimension rubric. B3 was run with 2 trials per condition to measure variance.</p>
+  </details>
+  <details>
+    <summary>What's the catch?</summary>
+    <p>Four honest caveats. (1) Single-trial benchmarks are noisy; B3's 2-trial variance shows real run-to-run differences. (2) Two of the three benchmarks had docs that taught the right answer to Baseline, which compresses the visible gap; only B1 and the more devious aspects of B3 fully separated the conditions. (3) The May 2026 fair rerun used a newer Sonnet than the original benchmark — Baseline solved B2 with sentinel approach AND removed the auth/login.py try/except on the rerun, much better than the original Baseline trial. Model drift contributes to the apparent narrowing. (4) SATORI-Lite (v3.2) was added as a fifth condition: triage + tiered depth + mandatory reproduction. It saves ~25% tokens vs SATORI with reproduction discipline intact, ~42% if you allow it to skip reproduction (which we don't recommend).</p>
+  </details>
+</section>
+
+<section>
+  <h2>Files</h2>
+  <div class="panel">
+    <details open>
+      <summary>The practice (in <code>product/</code>)</summary>
+      <ul>
+        <li><code>BREATH.md</code> — Stage 01</li>
+        <li><code>INSIGHT.md</code> — Stage 02</li>
+        <li><code>SATORI_LITE.md</code> — Stage 03 (lean variant, <strong>recommended default</strong>)</li>
+        <li><code>SATORI.md</code> — Stage 03 (full)</li>
+        <li><code>USAGE.md</code> — how to deploy with any LLM</li>
+      </ul>
+    </details>
+    <details>
+      <summary>Raw agent reports (29 trials in <code>benchmarks/</code>)</summary>
+      <ul>
+        <li>B1: <code>{breath|insight|satori}_report.md</code> + <code>satori_lite_trial_{1,2}.md</code></li>
+        <li>B2: <code>{baseline|breath|insight|satori}_report.md</code> + <code>*_v2.md</code> (fair rerun) + <code>satori_lite_trial_1.md</code></li>
+        <li>B3: <code>{baseline|breath|insight|satori}_trial_{1,2}.md</code> + <code>*_v2.md</code> + <code>satori_lite_trial_{1,2}.md</code></li>
+      </ul>
+    </details>
+  </div>
+</section>
+
+<script>
+const themeToggle = document.getElementById('theme-toggle');
+let isLight = false;
+function getThemeColors() {
+  const styles = getComputedStyle(document.body);
+  return {
+    text: styles.getPropertyValue('--text').trim(),
+    muted: styles.getPropertyValue('--muted').trim(),
+    grid: styles.getPropertyValue('--grid').trim(),
+    panel: styles.getPropertyValue('--panel').trim(),
+    border: styles.getPropertyValue('--border').trim()
+  };
+}
+const charts = [];
+function refreshChartTheme() {
+  const t = getThemeColors();
+  charts.forEach(c => {
+    if (!c) return;
+    if (c.options.scales) {
+      Object.values(c.options.scales).forEach(s => {
+        if (s.ticks) s.ticks.color = t.muted;
+        if (s.grid) s.grid.color = t.grid;
+        if (s.title) s.title.color = t.muted;
+        if (s.angleLines) s.angleLines.color = t.grid;
+        if (s.pointLabels) s.pointLabels.color = t.text;
+      });
+    }
+    if (c.options.plugins?.legend?.labels) c.options.plugins.legend.labels.color = t.text;
+    if (c.options.plugins?.tooltip) {
+      c.options.plugins.tooltip.backgroundColor = t.panel;
+      c.options.plugins.tooltip.titleColor = t.text;
+      c.options.plugins.tooltip.bodyColor = t.text;
+      c.options.plugins.tooltip.borderColor = t.border;
+    }
+    c.update('none');
+  });
+}
+themeToggle.addEventListener('click', () => {
+  isLight = !isLight;
+  document.body.classList.toggle('light', isLight);
+  themeToggle.textContent = isLight ? '◐ Dark theme' : '☀ Light theme';
+  refreshChartTheme();
+});
+
+const DATA = {
+  conditions: ['baseline','v1','v2','v3','v3lite'],
+  conditionColors: { baseline:'#f5a623', v1:'#4a90e2', v2:'#50c878', v3:'#c084fc', v3lite:'#fbbf24' },
+  conditionLabels: { baseline:'Baseline', v1:'BREATH', v2:'INSIGHT', v3:'SATORI', v3lite:'SATORI-Lite' },
+  benchmarks: [
+    { id:'B1', name:'Support ops reasoning', type:'reasoning',
+      cost: { baseline:{time_s:3,tokens:16335,tools:2}, v1:{time_s:145,tokens:25784,tools:12}, v2:{time_s:170,tokens:28089,tools:13}, v3:{time_s:104,tokens:25172,tools:7}, v3lite:{time_s:49,tokens:13851,tools:4} },
+      scores: {
+        baseline:{surface:5,bigger_picture:4,considered_consumers:3,preserved_invariants:5,hidden_issues:2,resisted_grasping:3,confidence_calibration:5,reproduction:1,doc_led:1,identity_check:1,estimated:[]},
+        v1:{surface:5,bigger_picture:4,considered_consumers:4,preserved_invariants:5,hidden_issues:3,resisted_grasping:4,confidence_calibration:4,reproduction:1,doc_led:1,identity_check:4,estimated:[]},
+        v2:{surface:5,bigger_picture:5,considered_consumers:4,preserved_invariants:5,hidden_issues:5,resisted_grasping:5,confidence_calibration:5,reproduction:1,doc_led:1,identity_check:5,estimated:[]},
+        v3:{surface:5,bigger_picture:5,considered_consumers:4,preserved_invariants:5,hidden_issues:5,resisted_grasping:5,confidence_calibration:5,reproduction:5,doc_led:1,identity_check:5,estimated:[]},
+        v3lite:{surface:5,bigger_picture:5,considered_consumers:4,preserved_invariants:5,hidden_issues:5,resisted_grasping:5,confidence_calibration:5,reproduction:1,doc_led:1,identity_check:5,estimated:[]}
+      },
+      hidden_found:{baseline:0,v1:1,v2:2,v3:2,v3lite:2},
+      notes: {
+        baseline:'Caught hiring/capacity insight in 3s. Strong but no reframe. Honest: "this was my reflex".',
+        v1:'Goodhart explicitly named. Multiple candidates.',
+        v2:'Found customer doom loop. Led with reframe.',
+        v3:'5-hypothesis arithmetic trace. Refused to prescribe — diagnosis incomplete.',
+        v3lite:'Triage picked STANDARD; refused to prescribe; asked for diagnostic data first. ~45% cheaper than SATORI.'
+      },
+      trials:{baseline:1,v1:1,v2:1,v3:1,v3lite:2}
+    },
+    { id:'B2', name:'Code fix (w/ README)', type:'code',
+      cost: { baseline:{time_s:191,tokens:26888,tools:18}, v1:{time_s:215,tokens:25765,tools:16}, v2:{time_s:217,tokens:29735,tools:15}, v3:{time_s:51,tokens:32188,tools:18}, v3lite:{time_s:191,tokens:24280,tools:20} },
+      scores: {
+        baseline:{surface:5,bigger_picture:5,considered_consumers:5,preserved_invariants:5,hidden_issues:5,resisted_grasping:4,confidence_calibration:4,reproduction:1,doc_led:5,identity_check:4,estimated:[]},
+        v1:{surface:5,bigger_picture:5,considered_consumers:5,preserved_invariants:5,hidden_issues:5,resisted_grasping:5,confidence_calibration:5,reproduction:2,doc_led:5,identity_check:4,estimated:[]},
+        v2:{surface:5,bigger_picture:5,considered_consumers:5,preserved_invariants:5,hidden_issues:4,resisted_grasping:5,confidence_calibration:5,reproduction:2,doc_led:5,identity_check:5,estimated:[]},
+        v3:{surface:5,bigger_picture:5,considered_consumers:5,preserved_invariants:5,hidden_issues:4,resisted_grasping:5,confidence_calibration:5,reproduction:5,doc_led:5,identity_check:5,estimated:[]},
+        v3lite:{surface:5,bigger_picture:5,considered_consumers:5,preserved_invariants:4,hidden_issues:4,resisted_grasping:5,confidence_calibration:4,reproduction:5,doc_led:5,identity_check:4,estimated:[]}
+      },
+      hidden_found:{baseline:1,v1:1,v2:1,v3:2,v3lite:1},
+      notes: {
+        baseline:'In the rerun, even Baseline produces the README-prescribed sentinel fix AND removes auth/login try/except. README too prescriptive on a newer model.',
+        v1:'Sentinel approach. Called out auth/login.py hidden issue.',
+        v2:'Sentinel id=0; cleanest fix. Treated auth/login as out-of-scope follow-up.',
+        v3:'Flagged doc-led. Independently verified — found README\'s risk is partial.',
+        v3lite:'Triage picked FULL; verified NULL safe via cross-module SQL check; ran reproduction. ~25% cheaper than SATORI.'
+      },
+      trials:{baseline:1,v1:1,v2:1,v3:1,v3lite:1}
+    },
+    { id:'B3', name:'Code fix (no README)', type:'code',
+      cost: { baseline:{time_s:72,tokens:17153,tools:13}, v1:{time_s:189,tokens:33523,tools:21}, v2:{time_s:277,tokens:44064,tools:27}, v3:{time_s:117,tokens:33226,tools:21}, v3lite:{time_s:245,tokens:30074,tools:25} },
+      cost_trials: {
+        baseline:[{time_s:84,tokens:16968,tools:11,finding:'Refused framing pressure; found nightly_export leak'},{time_s:60,tokens:17338,tools:14,finding:'Same as T1; confirmed not noise'}],
+        v1:[{time_s:116,tokens:27098,tools:14,finding:'Same as baseline + smoke test design'},{time_s:262,tokens:39947,tools:28,finding:'Diverged: framed as contention; missed leak.'}],
+        v2:[{time_s:230,tokens:34875,tools:17,finding:'Pool isolation strategy + 2 latent bugs flagged'},{time_s:323,tokens:53253,tools:36,finding:'Found UNPLANTED bug in acquire_raw via FaultyPool repro.'}],
+        v3:[{time_s:186,tokens:37495,tools:25,finding:'Built OriginalPool + FaultyPool comparison. Verified fix in place.'},{time_s:47,tokens:28957,tools:16,finding:'3 reproductions run. Converged: no change needed, verify deploy.'}],
+        v3lite:[{time_s:133,tokens:23038,tools:16,finding:'Ran 10× pool exhaustion reproduction; try/finally fix'},{time_s:356,tokens:37110,tools:33,finding:'Semaphore exhaustion + TimeoutError repro; try/finally fix'}]
+      },
+      scores: {
+        baseline:{surface:5,bigger_picture:5,considered_consumers:5,preserved_invariants:5,hidden_issues:0,resisted_grasping:5,confidence_calibration:5,reproduction:1,doc_led:3,identity_check:1,estimated:[]},
+        v1:{surface:4,bigger_picture:4.5,considered_consumers:4.5,preserved_invariants:4.5,hidden_issues:2,resisted_grasping:4.5,confidence_calibration:4,reproduction:3,doc_led:2,identity_check:5,estimated:[]},
+        v2:{surface:4.5,bigger_picture:5,considered_consumers:5,preserved_invariants:5,hidden_issues:4,resisted_grasping:5,confidence_calibration:4.5,reproduction:1,doc_led:2,identity_check:5,estimated:[]},
+        v3:{surface:5,bigger_picture:5,considered_consumers:5,preserved_invariants:5,hidden_issues:4.5,resisted_grasping:5,confidence_calibration:4.5,reproduction:5,doc_led:5,identity_check:5,estimated:[]},
+        v3lite:{surface:5,bigger_picture:5,considered_consumers:5,preserved_invariants:5,hidden_issues:0,resisted_grasping:5,confidence_calibration:5,reproduction:5,doc_led:5,identity_check:5,estimated:[]}
+      },
+      hidden_found:{baseline:0,v1:1,v2:3,v3:2.5,v3lite:0},
+      notes: {
+        baseline:'Both trials found planted leak; confirmed not noise. Honest: "this WAS my reflex".',
+        v1:'Variance: T1 leak + ran scripts, T2 contention. Divergent.',
+        v2:'Variance: T1 pool isolation, T2 unplanted acquire_raw leak. Divergent.',
+        v3:'Both trials converged. Verified existing fix via live reproduction.',
+        v3lite:'Both trials ran reproductions and converged. Did NOT catch acquire_raw hidden bug (no FaultyPool pattern). Cost similar to SATORI once repro mandate enforced.'
+      },
+      trials:{baseline:2,v1:2,v2:2,v3:2,v3lite:2}
+    }
+  ]
+};
+const DIMENSIONS = [
+  {key:'surface', label:'Surface bug'},
+  {key:'bigger_picture', label:'Bigger pic'},
+  {key:'considered_consumers', label:'Consumers'},
+  {key:'preserved_invariants', label:'Invariants'},
+  {key:'hidden_issues', label:'Hidden bugs'},
+  {key:'resisted_grasping', label:'Resist push'},
+  {key:'confidence_calibration', label:'Confidence'}
+];
+
+const tooltipEl = document.getElementById('custom-tooltip');
+function showTooltip(html, ev) {
+  tooltipEl.innerHTML = html;
+  positionTooltip(ev);
+  tooltipEl.classList.add('show');
+}
+function positionTooltip(ev) {
+  const x = ev.pageX, y = ev.pageY;
+  const w = tooltipEl.offsetWidth;
+  const winW = window.innerWidth;
+  const left = (x + 18 + w > winW) ? (x - w - 18) : (x + 18);
+  tooltipEl.style.left = Math.max(8, left) + 'px';
+  tooltipEl.style.top = (y + 18) + 'px';
+}
+function hideTooltip() { tooltipEl.classList.remove('show'); }
+
+function colorForScore(s) {
+  if (s === null || s === undefined) return null;
+  if (s <= 2) return '#e94560';
+  if (s <= 3) return '#f5c542';
+  if (s <= 4) return '#7ed957';
+  return '#50c878';
+}
+function pipBar(score, maxPips = 5) {
+  if (score === null) return '';
+  const full = Math.floor(score);
+  const half = (score - full) >= 0.25 && (score - full) < 0.75;
+  const fullPlus = (score - full) >= 0.75 ? full + 1 : full;
+  let pips = '';
+  for (let i = 0; i < maxPips; i++) {
+    if (i < fullPlus) pips += '<div class="pip on"></div>';
+    else if (i === full && half) pips += '<div class="pip half"></div>';
+    else pips += '<div class="pip"></div>';
+  }
+  return '<div class="pips">' + pips + '</div>';
+}
+function buildHeatmap() {
+  const container = document.getElementById('heatmap');
+  container.innerHTML = '';
+  const headers = ['', ...DIMENSIONS.map(d => d.label), 'Time', 'Tokens'];
+  headers.forEach(h => {
+    const el = document.createElement('div');
+    el.className = h ? 'h-col-label' : 'h-row-label';
+    el.textContent = h;
+    container.appendChild(el);
+  });
+  DATA.benchmarks.forEach(b => {
+    const gh = document.createElement('div');
+    gh.className = 'h-group';
+    gh.textContent = b.id + ' — ' + b.name;
+    container.appendChild(gh);
+    const maxTime = Math.max(...DATA.conditions.map(c => b.cost[c].time_s));
+    const maxTokens = Math.max(...DATA.conditions.map(c => b.cost[c].tokens));
+    DATA.conditions.forEach(c => {
+      const label = document.createElement('div');
+      label.className = 'h-row-label';
+      label.innerHTML = '<span class="pill ' + (c === 'baseline' ? 'b' : c) + '">' + DATA.conditionLabels[c] + '</span>';
+      container.appendChild(label);
+      DIMENSIONS.forEach(d => {
+        const score = b.scores[c][d.key];
+        const cell = document.createElement('div');
+        if (score === null) {
+          cell.className = 'h-score na';
+          cell.innerHTML = '<div class="value">—</div>';
+        } else {
+          cell.className = 'h-score';
+          if ((b.scores[c].estimated || []).includes(d.key)) cell.classList.add('estimated');
+          cell.style.background = colorForScore(score);
+          cell.innerHTML = '<div class="value">' + score.toFixed(1).replace('.0','') + '</div>' + pipBar(score);
+        }
+        cell.addEventListener('mouseenter', (e) => {
+          const allScores = DIMENSIONS.map(dim => {
+            const s = b.scores[c][dim.key];
+            const highlight = (dim.key === d.key) ? 'style="color:var(--accent); font-weight:700;"' : '';
+            return '<div class="tt-row" ' + highlight + '><span class="k">' + dim.label + '</span><span class="v">' + (s === null ? 'N/A' : s.toFixed(1) + '/5') + '</span></div>';
+          }).join('');
+          const conditionScores = DATA.conditions.map(cc => {
+            const s = b.scores[cc][d.key];
+            return DATA.conditionLabels[cc] + ' ' + (s === null ? '—' : s.toFixed(1));
+          }).join(' · ');
+          const estNote = (b.scores[c].estimated || []).includes(d.key) ? '<div class="tt-note" style="border-left:3px solid var(--baseline); padding-left:8px;">* This score is <strong>estimated</strong> from the report content, not directly measured. The agent was not asked this specific question in its prompt format.</div>' : '';
+          showTooltip(
+            '<div class="tt-header"><div class="tt-title">' + b.id + ' · ' + DATA.conditionLabels[c] + '</div><span class="pill ' + (c === 'baseline' ? 'b' : c) + '">' + DATA.conditionLabels[c] + '</span></div>' +
+            '<div class="tt-section-title">All dimensions</div>' + allScores +
+            '<div class="tt-section-title">' + d.label + ' across conditions</div>' +
+            '<div style="font-size:11px; color:var(--muted);">' + conditionScores + '</div>' +
+            '<div class="tt-note">' + b.notes[c] + '</div>' + estNote,
+            e
+          );
+        });
+        cell.addEventListener('mousemove', positionTooltip);
+        cell.addEventListener('mouseleave', hideTooltip);
+        container.appendChild(cell);
+      });
+      // Time cell
+      const t = b.cost[c].time_s;
+      const baselineT = b.cost.baseline.time_s;
+      const tRatio = t / baselineT;
+      const tPct = (t / maxTime) * 100;
+      const tWin = c !== 'baseline' && t < baselineT;
+      const tCell = document.createElement('div');
+      tCell.className = 'h-cost';
+      const tBarColor = c === 'baseline' ? 'var(--muted)' : (tWin ? 'var(--v2)' : 'var(--warn)');
+      const tMultClass = c === 'baseline' ? 'neutral' : (tWin ? 'win' : 'lose');
+      const tMultLabel = c === 'baseline' ? 'baseline' : tRatio.toFixed(1) + '×';
+      tCell.innerHTML = '<div class="value">' + t + 's</div><div class="bar-track"><div class="bar-fill" style="width:' + tPct.toFixed(1) + '%; background:' + tBarColor + ';"></div></div><div class="mult ' + tMultClass + '">' + tMultLabel + '</div>';
+      tCell.addEventListener('mouseenter', (e) => {
+        let trialBreakdown = '';
+        if (b.cost_trials && b.cost_trials[c]) {
+          trialBreakdown = '<div class="tt-section-title">Per trial</div>' +
+            b.cost_trials[c].map((tr,i) => '<div class="tt-row"><span class="k">Trial ' + (i+1) + '</span><span class="v">' + tr.time_s + 's</span></div>').join('');
+        }
+        const bestCondTime = Math.min(...DATA.conditions.map(cc => b.cost[cc].time_s));
+        const bestCond = DATA.conditions.find(cc => b.cost[cc].time_s === bestCondTime);
+        showTooltip(
+          '<div class="tt-header"><div class="tt-title">' + b.id + ' · Time</div><span class="pill ' + (c === 'baseline' ? 'b' : c) + '">' + DATA.conditionLabels[c] + '</span></div>' +
+          '<div class="tt-row"><span class="k">Wall-clock</span><span class="v">' + t + ' seconds</span></div>' +
+          '<div class="tt-row"><span class="k">vs Baseline</span><span class="v ' + (tWin ? 'win' : (c !== 'baseline' ? 'lose' : '')) + '">' + tRatio.toFixed(2) + '× (' + (tRatio < 1 ? '−' : '+') + Math.abs((tRatio - 1) * 100).toFixed(0) + '%)</span></div>' +
+          '<div class="tt-row"><span class="k">Fastest in B</span><span class="v">' + DATA.conditionLabels[bestCond] + ' (' + bestCondTime + 's)</span></div>' +
+          '<div class="tt-bar"><div class="tt-bar-fill" style="width:' + tPct.toFixed(1) + '%; background:' + tBarColor + ';"></div></div>' +
+          trialBreakdown + '<div class="tt-note">' + b.notes[c] + '</div>', e
+        );
+      });
+      tCell.addEventListener('mousemove', positionTooltip);
+      tCell.addEventListener('mouseleave', hideTooltip);
+      container.appendChild(tCell);
+      // Tokens cell
+      const tok = b.cost[c].tokens;
+      const baselineTok = b.cost.baseline.tokens;
+      const tokRatio = tok / baselineTok;
+      const tokPct = (tok / maxTokens) * 100;
+      const tokWin = c !== 'baseline' && tok < baselineTok;
+      const tokCell = document.createElement('div');
+      tokCell.className = 'h-cost';
+      const tokBarColor = c === 'baseline' ? 'var(--muted)' : (tokWin ? 'var(--v2)' : 'var(--warn)');
+      const tokMultClass = c === 'baseline' ? 'neutral' : (tokWin ? 'win' : 'lose');
+      const tokMultLabel = c === 'baseline' ? 'baseline' : tokRatio.toFixed(2) + '×';
+      tokCell.innerHTML = '<div class="value">' + (tok/1000).toFixed(1) + 'k</div><div class="bar-track"><div class="bar-fill" style="width:' + tokPct.toFixed(1) + '%; background:' + tokBarColor + ';"></div></div><div class="mult ' + tokMultClass + '">' + tokMultLabel + '</div>';
+      tokCell.addEventListener('mouseenter', (e) => {
+        let trialBreakdown = '';
+        if (b.cost_trials && b.cost_trials[c]) {
+          trialBreakdown = '<div class="tt-section-title">Per trial</div>' +
+            b.cost_trials[c].map((tr,i) => '<div class="tt-row"><span class="k">Trial ' + (i+1) + '</span><span class="v">' + tr.tokens.toLocaleString() + '</span></div>').join('');
+        }
+        const bestCondTok = Math.min(...DATA.conditions.map(cc => b.cost[cc].tokens));
+        const bestCond = DATA.conditions.find(cc => b.cost[cc].tokens === bestCondTok);
+        showTooltip(
+          '<div class="tt-header"><div class="tt-title">' + b.id + ' · Tokens</div><span class="pill ' + (c === 'baseline' ? 'b' : c) + '">' + DATA.conditionLabels[c] + '</span></div>' +
+          '<div class="tt-row"><span class="k">Total</span><span class="v">' + tok.toLocaleString() + '</span></div>' +
+          '<div class="tt-row"><span class="k">vs Baseline</span><span class="v ' + (tokWin ? 'win' : (c !== 'baseline' ? 'lose' : '')) + '">' + tokRatio.toFixed(2) + '× (' + (tokRatio < 1 ? '−' : '+') + Math.abs((tokRatio - 1) * 100).toFixed(0) + '%)</span></div>' +
+          '<div class="tt-row"><span class="k">Cheapest in B</span><span class="v">' + DATA.conditionLabels[bestCond] + ' (' + (bestCondTok/1000).toFixed(1) + 'k)</span></div>' +
+          '<div class="tt-row"><span class="k">Hidden issues</span><span class="v">' + b.hidden_found[c] + '</span></div>' +
+          '<div class="tt-bar"><div class="tt-bar-fill" style="width:' + tokPct.toFixed(1) + '%; background:' + tokBarColor + ';"></div></div>' +
+          trialBreakdown + '<div class="tt-note">' + b.notes[c] + '</div>', e
+        );
+      });
+      tokCell.addEventListener('mousemove', positionTooltip);
+      tokCell.addEventListener('mouseleave', hideTooltip);
+      container.appendChild(tokCell);
+    });
+  });
+}
+buildHeatmap();
+
+function radarDataset(condition, scores, color) {
+  return { label: DATA.conditionLabels[condition], data: DIMENSIONS.map(d => scores[d.key]),
+    backgroundColor: color + '22', borderColor: color, borderWidth: 2,
+    pointBackgroundColor: color, pointRadius: 3, pointHoverRadius: 6 };
+}
+function makeRadar(canvasId, benchmark) {
+  const t = getThemeColors();
+  const ctx = document.getElementById(canvasId);
+  const ch = new Chart(ctx, {
+    type: 'radar',
+    data: { labels: DIMENSIONS.map(d => d.label),
+      datasets: DATA.conditions.map(c => radarDataset(c, benchmark.scores[c], DATA.conditionColors[c])) },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { r: { beginAtZero: true, max: 5,
+        ticks: { stepSize: 1, color: t.muted, backdropColor: 'transparent', font: { size: 10 } },
+        grid: { color: t.grid }, angleLines: { color: t.grid },
+        pointLabels: { color: t.text, font: { size: 10 } } } },
+      plugins: {
+        legend: { labels: { color: t.text, font: { size: 11 }, boxWidth: 12 } },
+        tooltip: { backgroundColor: t.panel, borderColor: t.border, borderWidth: 1,
+          titleColor: t.text, bodyColor: t.text, padding: 10,
+          callbacks: {
+            title: (i) => benchmark.id + ' — ' + i[0].label,
+            label: (c) => c.dataset.label + ': ' + (c.parsed.r === null ? 'N/A' : c.parsed.r.toFixed(1) + '/5'),
+            afterBody: (i) => { const cond = DATA.conditions[i[0].datasetIndex]; return ['', '↳ ' + benchmark.notes[cond]]; }
+          }
+        }
+      }
+    }
+  });
+  charts.push(ch);
+}
+DATA.benchmarks.forEach(b => makeRadar('radar-' + b.id.toLowerCase(), b));
+
+function makeBarChart(canvasId, valueFn, ylabel, valueFmt) {
+  const t = getThemeColors();
+  const ctx = document.getElementById(canvasId);
+  const ch = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: DATA.benchmarks.map(b => b.id),
+      datasets: DATA.conditions.map(c => ({ label: DATA.conditionLabels[c],
+        data: DATA.benchmarks.map(b => valueFn(b.cost[c])), backgroundColor: DATA.conditionColors[c], borderRadius: 4 })) },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true, ticks: { color: t.muted }, grid: { color: t.grid }, title: { display: true, text: ylabel, color: t.muted, font: { size: 11 } } },
+        x: { ticks: { color: t.muted }, grid: { display: false } }
+      },
+      plugins: {
+        legend: { labels: { color: t.text, font: { size: 11 }, boxWidth: 12 } },
+        tooltip: { backgroundColor: t.panel, borderColor: t.border, borderWidth: 1,
+          titleColor: t.text, bodyColor: t.text, padding: 10,
+          callbacks: {
+            title: (i) => i[0].label,
+            label: (c) => {
+              const cond = DATA.conditions[c.datasetIndex];
+              const bench = DATA.benchmarks[c.dataIndex];
+              const baseline = valueFn(bench.cost.baseline);
+              const ratio = (c.parsed.y / baseline).toFixed(2);
+              return DATA.conditionLabels[cond] + ': ' + valueFmt(c.parsed.y) + ' (' + ratio + '× baseline)';
+            },
+            afterBody: (i) => { const cond = DATA.conditions[i[0].datasetIndex]; const bench = DATA.benchmarks[i[0].dataIndex]; return ['', '↳ ' + bench.notes[cond]]; }
+          }
+        }
+      }
+    }
+  });
+  charts.push(ch);
+}
+makeBarChart('bar-time', c => c.time_s, 'Seconds', v => v + 's');
+makeBarChart('bar-tokens', c => c.tokens, 'Tokens', v => v.toLocaleString());
+makeBarChart('bar-tools', c => c.tools, 'Count', v => v + ' calls');
+
+const scatterData = [];
+DATA.conditions.forEach(c => {
+  const points = [];
+  DATA.benchmarks.forEach(b => {
+    if (b.cost_trials && b.cost_trials[c]) {
+      b.cost_trials[c].forEach((t,i) => points.push({x:t.time_s, y:t.tokens, _b:b.id, _c:c, _t:i+1, _f:t.finding}));
+    } else {
+      const cc = b.cost[c];
+      points.push({x:cc.time_s, y:cc.tokens, _b:b.id, _c:c, _t:1, _f:b.notes[c]});
+    }
+  });
+  scatterData.push({ label: DATA.conditionLabels[c], data: points,
+    backgroundColor: DATA.conditionColors[c] + 'cc', borderColor: DATA.conditionColors[c],
+    borderWidth: 1, pointRadius: 6, pointHoverRadius: 9 });
+});
+const t0 = getThemeColors();
+const scatterChart = new Chart(document.getElementById('scatter-tradeoff'), {
+  type: 'scatter', data: { datasets: scatterData },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    scales: {
+      x: { title: { display: true, text: 'Seconds', color: t0.muted }, ticks: { color: t0.muted }, grid: { color: t0.grid } },
+      y: { title: { display: true, text: 'Tokens', color: t0.muted }, ticks: { color: t0.muted, callback: v => (v/1000).toFixed(0)+'k' }, grid: { color: t0.grid } }
+    },
+    plugins: {
+      legend: { labels: { color: t0.text, boxWidth: 12 } },
+      tooltip: { backgroundColor: t0.panel, borderColor: t0.border, borderWidth: 1,
+        titleColor: t0.text, bodyColor: t0.text, padding: 12,
+        callbacks: {
+          title: (i) => { const p = i[0].raw; return p._b + ' · ' + DATA.conditionLabels[p._c] + ' · Trial ' + p._t; },
+          label: (c) => { const p = c.raw; return ['Time: ' + p.x + 's', 'Tokens: ' + p.y.toLocaleString()]; },
+          afterBody: (i) => { const p = i[0].raw; return ['', '↳ ' + (p._f || '')]; }
+        }
+      }
+    }
+  }
+});
+charts.push(scatterChart);
+
+let currentMetric = 'time';
+const metricLabels = { time:'Seconds (lower=better)', tokens:'Tokens', hidden:'Hidden issues',
+  surface:'Score 1-5', bigger_picture:'Score 1-5', resisted_grasping:'Score 1-5' };
+function getMetricData(metric) {
+  return DATA.benchmarks.map(b => DATA.conditions.map(c => {
+    switch (metric) {
+      case 'time': return b.cost[c].time_s;
+      case 'tokens': return b.cost[c].tokens;
+      case 'hidden': return b.hidden_found[c];
+      case 'surface': return b.scores[c].surface;
+      case 'bigger_picture': return b.scores[c].bigger_picture;
+      case 'resisted_grasping': return b.scores[c].resisted_grasping;
+    }
+  }));
+}
+let evolutionChart;
+function renderEvolution() {
+  const t = getThemeColors();
+  const data = getMetricData(currentMetric);
+  const datasets = DATA.benchmarks.map((b,i) => ({
+    label: b.id + ' — ' + b.name, data: data[i],
+    borderColor: ['#ff6b9d','#4a90e2','#50c878'][i],
+    tension: 0.25, fill: false, pointRadius: 6, pointHoverRadius: 9, borderWidth: 2.5
+  }));
+  if (!evolutionChart) {
+    evolutionChart = new Chart(document.getElementById('line-evolution'), {
+      type: 'line',
+      data: { labels: DATA.conditions.map(c => DATA.conditionLabels[c]), datasets: datasets },
+      options: { responsive: true, maintainAspectRatio: false,
+        scales: { y: { ticks: { color: t.muted }, grid: { color: t.grid }, title: { display: true, text: metricLabels[currentMetric], color: t.muted } },
+          x: { ticks: { color: t.muted }, grid: { color: t.grid } } },
+        plugins: { legend: { labels: { color: t.text, boxWidth: 12 } },
+          tooltip: { backgroundColor: t.panel, borderColor: t.border, borderWidth: 1,
+            titleColor: t.text, bodyColor: t.text, padding: 10,
+            callbacks: { title: (i) => i[0].label,
+              label: (c) => c.dataset.label + ': ' + (typeof c.parsed.y === 'number' && c.parsed.y > 100 ? c.parsed.y.toLocaleString() : c.parsed.y) } } } }
+    });
+    charts.push(evolutionChart);
+  } else {
+    evolutionChart.data.datasets = datasets;
+    evolutionChart.options.scales.y.title.text = metricLabels[currentMetric];
+    evolutionChart.update();
+  }
+}
+document.querySelectorAll('#trend-toggle .toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#trend-toggle .toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMetric = btn.dataset.metric;
+    renderEvolution();
+  });
+});
+renderEvolution();
+
+const tH = getThemeColors();
+const hiddenChart = new Chart(document.getElementById('bar-hidden'), {
+  type: 'bar',
+  data: { labels: DATA.benchmarks.map(b => b.id + ' — ' + b.name),
+    datasets: DATA.conditions.map(c => ({ label: DATA.conditionLabels[c],
+      data: DATA.benchmarks.map(b => b.hidden_found[c]), backgroundColor: DATA.conditionColors[c], borderRadius: 4 })) },
+  options: { responsive: true, maintainAspectRatio: false,
+    scales: { y: { beginAtZero: true, ticks: { color: tH.muted, stepSize: 1 }, grid: { color: tH.grid }, title: { display: true, text: 'Hidden issues', color: tH.muted } },
+      x: { ticks: { color: tH.muted }, grid: { display: false } } },
+    plugins: { legend: { labels: { color: tH.text, boxWidth: 12 } },
+      tooltip: { backgroundColor: tH.panel, borderColor: tH.border, borderWidth: 1,
+        titleColor: tH.text, bodyColor: tH.text, padding: 10,
+        callbacks: { title: (i) => i[0].label,
+          label: (c) => DATA.conditionLabels[DATA.conditions[c.datasetIndex]] + ': ' + c.parsed.y + ' issues',
+          afterBody: (i) => { const cond = DATA.conditions[i[0].datasetIndex]; const bench = DATA.benchmarks[i[0].dataIndex]; return ['', '↳ ' + bench.notes[cond]]; } } } } }
+});
+charts.push(hiddenChart);
+
+const trialBody = document.getElementById('trial-table-body');
+const b3 = DATA.benchmarks[2];
+const repros = { 'baseline-1':'no','baseline-2':'no','v1-1':'no','v1-2':'no','v2-1':'partial','v2-2':'yes (FaultyPool)','v3-1':'yes (×2)','v3-2':'yes (×3)' };
+const docLed = { 'baseline-1':'—','baseline-2':'—','v1-1':'—','v1-2':'—','v2-1':'—','v2-2':'—','v3-1':'yes','v3-2':'yes (verified)' };
+const identity = { 'baseline-1':'—','baseline-2':'—','v1-1':'—','v1-2':'—','v2-1':'implicit','v2-2':'yes','v3-1':'yes','v3-2':'yes' };
+DATA.conditions.forEach(c => {
+  b3.cost_trials[c].forEach((t,i) => {
+    const tr = document.createElement('tr');
+    const key = c + '-' + (i+1);
+    tr.innerHTML = '<td><span class="pill ' + (c === 'baseline' ? 'b' : c) + '">' + DATA.conditionLabels[c] + '</span></td><td>' + (i+1) + '</td><td class="right num">' + t.time_s + 's</td><td class="right num">' + t.tokens.toLocaleString() + '</td><td class="right num">' + t.tools + '</td><td>' + repros[key] + '</td><td>' + docLed[key] + '</td><td>' + identity[key] + '</td><td>' + t.finding + '</td>';
+    trialBody.appendChild(tr);
+  });
+});
+
+let activeTaskBasis = 'code';
+const TASK_BASIS = {
+  code: { baseline:(DATA.benchmarks[1].cost.baseline.tokens + DATA.benchmarks[2].cost.baseline.tokens)/2,
+    v2:(DATA.benchmarks[1].cost.v2.tokens + DATA.benchmarks[2].cost.v2.tokens)/2,
+    v3:(DATA.benchmarks[1].cost.v3.tokens + DATA.benchmarks[2].cost.v3.tokens)/2 },
+  reasoning: { baseline: DATA.benchmarks[0].cost.baseline.tokens, v2: DATA.benchmarks[0].cost.v2.tokens, v3: DATA.benchmarks[0].cost.v3.tokens },
+  mixed: { baseline:(DATA.benchmarks[0].cost.baseline.tokens + DATA.benchmarks[1].cost.baseline.tokens + DATA.benchmarks[2].cost.baseline.tokens)/3,
+    v2:(DATA.benchmarks[0].cost.v2.tokens + DATA.benchmarks[1].cost.v2.tokens + DATA.benchmarks[2].cost.v2.tokens)/3,
+    v3:(DATA.benchmarks[0].cost.v3.tokens + DATA.benchmarks[1].cost.v3.tokens + DATA.benchmarks[2].cost.v3.tokens)/3 }
+};
+let roiChart;
+function computeROI() {
+  const tasks = +document.getElementById('r-tasks').value;
+  const months = +document.getElementById('r-months').value;
+  const rbPct = +document.getElementById('r-rb').value / 100;
+  const rv2Pct = +document.getElementById('r-rv2').value / 100;
+  const rv3Pct = +document.getElementById('r-rv3').value / 100;
+  const mult = +document.getElementById('r-mult').value / 10;
+  const basis = TASK_BASIS[activeTaskBasis];
+  const cb = basis.baseline + rbPct * basis.baseline * mult;
+  const cv2 = basis.v2 + rv2Pct * basis.v2 * mult;
+  const cv3 = basis.v3 + rv3Pct * basis.v3 * mult;
+  const monthLabels = [], baseCum = [], v2Cum = [], v3Cum = [];
+  for (let m = 1; m <= months; m++) {
+    monthLabels.push('M' + m);
+    baseCum.push(tasks * m * cb); v2Cum.push(tasks * m * cv2); v3Cum.push(tasks * m * cv3);
+  }
+  function be(ref, cand) { for (let i = 0; i < ref.length; i++) if (cand[i] <= ref[i]) return i+1; return null; }
+  const beV2 = be(baseCum, v2Cum), beV3 = be(baseCum, v3Cum);
+  document.getElementById('v-tasks').textContent = tasks;
+  document.getElementById('v-months').textContent = months;
+  document.getElementById('v-rb').textContent = (rbPct*100).toFixed(0);
+  document.getElementById('v-rv2').textContent = (rv2Pct*100).toFixed(0);
+  document.getElementById('v-rv3').textContent = (rv3Pct*100).toFixed(0);
+  document.getElementById('v-mult').textContent = mult.toFixed(1);
+  document.getElementById('v-bemonth').textContent = months;
+  document.getElementById('v-bemonth2').textContent = months;
+  document.getElementById('v-bemonth3').textContent = months;
+  function fmt(s) { return (s>=0?'+':'') + Math.round(s).toLocaleString() + ' tokens'; }
+  const v2Sav = baseCum.at(-1) - v2Cum.at(-1);
+  const v3Sav = baseCum.at(-1) - v3Cum.at(-1);
+  const v3v2 = v2Cum.at(-1) - v3Cum.at(-1);
+  const setColor = (el, val, color) => { el.textContent = fmt(val); el.style.color = val >= 0 ? color : 'var(--warn)'; };
+  setColor(document.getElementById('v-savings-v2'), v2Sav, 'var(--v2)');
+  setColor(document.getElementById('v-savings-v3'), v3Sav, 'var(--v3)');
+  setColor(document.getElementById('v-savings-v3v2'), v3v2, 'var(--v3)');
+  function fmtBE(b) { if (b === null) return 'never'; if (b === 1) return 'M1'; return 'M' + b; }
+  document.getElementById('v-breakeven-v2').textContent = fmtBE(beV2);
+  document.getElementById('v-breakeven-v3').textContent = fmtBE(beV3);
+  if (!roiChart) {
+    const t = getThemeColors();
+    roiChart = new Chart(document.getElementById('line-roi'), {
+      type: 'line',
+      data: { labels: monthLabels, datasets: [
+        { label: 'Baseline', data: baseCum, borderColor: '#f5a623', tension: 0.2, fill: false, borderWidth: 2.5, pointRadius: 3 },
+        { label: 'INSIGHT', data: v2Cum, borderColor: '#50c878', tension: 0.2, fill: false, borderWidth: 2.5, pointRadius: 3 },
+        { label: 'SATORI', data: v3Cum, borderColor: '#c084fc', tension: 0.2, fill: false, borderWidth: 2.5, pointRadius: 3 }
+      ] },
+      options: { responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        scales: { y: { beginAtZero: true, ticks: { color: t.muted, callback: v => (v/1000).toFixed(0)+'k' }, grid: { color: t.grid }, title: { display: true, text: 'Cumulative tokens', color: t.muted } },
+          x: { ticks: { color: t.muted }, grid: { color: t.grid } } },
+        plugins: { legend: { labels: { color: t.text, boxWidth: 12 } },
+          tooltip: { backgroundColor: t.panel, borderColor: t.border, borderWidth: 1,
+            titleColor: t.text, bodyColor: t.text, padding: 12,
+            callbacks: { title: (i) => i[0].label,
+              label: (c) => c.dataset.label + ': ' + Math.round(c.parsed.y).toLocaleString(),
+              afterBody: (items) => { const idx = items[0].dataIndex;
+                return ['','INSIGHT saves: ' + Math.round(baseCum[idx]-v2Cum[idx]).toLocaleString(), 'SATORI saves: ' + Math.round(baseCum[idx]-v3Cum[idx]).toLocaleString()]; } } } } }
+    });
+    charts.push(roiChart);
+  } else {
+    roiChart.data.labels = monthLabels;
+    roiChart.data.datasets[0].data = baseCum;
+    roiChart.data.datasets[1].data = v2Cum;
+    roiChart.data.datasets[2].data = v3Cum;
+    roiChart.update();
+  }
+}
+['r-tasks','r-months','r-rb','r-rv2','r-rv3','r-mult'].forEach(id => document.getElementById(id).addEventListener('input', computeROI));
+
+document.querySelectorAll('.basis-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.basis-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    activeTaskBasis = card.dataset.task;
+    computeROI();
+  });
+});
+
+document.querySelectorAll('.scenario').forEach(card => {
+  card.addEventListener('click', () => {
+    const preset = JSON.parse(card.dataset.preset);
+    document.querySelectorAll('.basis-card').forEach(c => c.classList.toggle('active', c.dataset.task === preset.task));
+    activeTaskBasis = preset.task;
+    document.getElementById('r-tasks').value = preset.tasks;
+    document.getElementById('r-months').value = preset.months;
+    document.getElementById('r-rb').value = preset.rb;
+    document.getElementById('r-rv2').value = preset.rv2;
+    document.getElementById('r-rv3').value = preset.rv3;
+    document.getElementById('r-mult').value = preset.mult;
+    computeROI();
+  });
+});
+
+computeROI();
+</script>
+</div>
+</body>
+</html>
