@@ -1,0 +1,137 @@
+{
+  "metadata": {
+    "model": "Claude Sonnet 4.x (original benchmark 4.6; fair rerun and SATORI-Lite trials on a newer Sonnet)",
+    "date": "2026-05-31",
+    "total_trials": 29,
+    "trial_breakdown": { "B1": 6, "B2": 8, "B3": 15 },
+    "conditions": ["baseline", "v1_breath", "v2_insight", "v3_satori", "v3_1_satori_lite"],
+    "note": "Repro / Doc-led / Identity scores for non-SATORI conditions were measured directly in the fair rerun (May 2026): each Baseline / BREATH / INSIGHT agent was given the SATORI-style report format and asked the same questions. SATORI-Lite (v3.2) is a new condition added in May 2026 — leaner SATORI with triage + tiered depth + mandatory reproduction. Caveats: (1) The fair rerun used a newer Sonnet than the original benchmark, so model-drift contributes to the deltas. (2) SATORI-Lite B1 numbers came from v3.1 (no codebase, so the v3.2 reproduction mandate didn't apply); B2 and B3 numbers came from v3.2."
+  },
+  "dimensions": [
+    {"key": "surface", "label": "Surface bug correct", "scale": "1-5"},
+    {"key": "bigger_picture", "label": "Bigger picture", "scale": "1-5"},
+    {"key": "considered_consumers", "label": "Considered consumers", "scale": "1-5"},
+    {"key": "preserved_invariants", "label": "Preserved invariants", "scale": "1-5"},
+    {"key": "hidden_issues", "label": "Hidden issues found", "scale": "1-5"},
+    {"key": "resisted_grasping", "label": "Resisted grasping", "scale": "1-5"},
+    {"key": "confidence_calibration", "label": "Confidence calibration", "scale": "1-5"},
+    {"key": "reproduction", "label": "Reproduction executed", "scale": "1-5"},
+    {"key": "doc_led", "label": "Doc-led flag", "scale": "1-5"},
+    {"key": "identity_check", "label": "Identity differed from reflex", "scale": "1-5"}
+  ],
+  "benchmarks": [
+    {
+      "id": "B1",
+      "name": "Support ops reasoning",
+      "type": "reasoning",
+      "trials_per_condition": 1,
+      "cost": {
+        "baseline": {"time_s": 3, "tokens": 16335, "tools": 2},
+        "v1_breath": {"time_s": 145, "tokens": 25784, "tools": 12},
+        "v2_insight": {"time_s": 170, "tokens": 28089, "tools": 13},
+        "v3_satori": {"time_s": 104, "tokens": 25172, "tools": 7},
+        "v3_1_satori_lite": {"time_s": 49, "tokens": 13851, "tools": 4}
+      },
+      "scores": {
+        "baseline": {"surface": 5, "bigger_picture": 4, "considered_consumers": 3, "preserved_invariants": 5, "hidden_issues": 2, "resisted_grasping": 3, "confidence_calibration": 5, "reproduction": 1, "doc_led": 1, "identity_check": 1},
+        "v1_breath": {"surface": 5, "bigger_picture": 4, "considered_consumers": 4, "preserved_invariants": 5, "hidden_issues": 3, "resisted_grasping": 4, "confidence_calibration": 4, "reproduction": 1, "doc_led": 1, "identity_check": 4},
+        "v2_insight": {"surface": 5, "bigger_picture": 5, "considered_consumers": 4, "preserved_invariants": 5, "hidden_issues": 5, "resisted_grasping": 5, "confidence_calibration": 5, "reproduction": 1, "doc_led": 1, "identity_check": 5},
+        "v3_satori": {"surface": 5, "bigger_picture": 5, "considered_consumers": 4, "preserved_invariants": 5, "hidden_issues": 5, "resisted_grasping": 5, "confidence_calibration": 5, "reproduction": 5, "doc_led": 1, "identity_check": 5},
+        "v3_1_satori_lite": {"surface": 5, "bigger_picture": 5, "considered_consumers": 4, "preserved_invariants": 5, "hidden_issues": 5, "resisted_grasping": 5, "confidence_calibration": 5, "reproduction": 1, "doc_led": 1, "identity_check": 5}
+      },
+      "hidden_found_count": {"baseline": 0, "v1_breath": 1, "v2_insight": 2, "v3_satori": 2, "v3_1_satori_lite": 2},
+      "notes": {
+        "baseline": "Caught hiring/capacity insight in 3s. Strong but no reframe. Honest 'this was my reflex' on identity.",
+        "v1_breath": "Goodhart explicitly named. Multiple candidates.",
+        "v2_insight": "Found customer doom loop. Led with reframe.",
+        "v3_satori": "5-hypothesis arithmetic trace. Refused to prescribe — diagnosis incomplete.",
+        "v3_1_satori_lite": "Triage picked STANDARD; refused to prescribe and asked for diagnostic data first. ~45% cheaper than v3 SATORI for the same finding."
+      }
+    },
+    {
+      "id": "B2",
+      "name": "Code fix (w/ README)",
+      "type": "code",
+      "trials_per_condition": 1,
+      "cost": {
+        "baseline": {"time_s": 191, "tokens": 26888, "tools": 18},
+        "v1_breath": {"time_s": 215, "tokens": 25765, "tools": 16},
+        "v2_insight": {"time_s": 217, "tokens": 29735, "tools": 15},
+        "v3_satori": {"time_s": 51, "tokens": 32188, "tools": 18},
+        "v3_1_satori_lite": {"time_s": 191, "tokens": 24280, "tools": 20}
+      },
+      "scores": {
+        "baseline": {"surface": 5, "bigger_picture": 5, "considered_consumers": 5, "preserved_invariants": 5, "hidden_issues": 5, "resisted_grasping": 4, "confidence_calibration": 4, "reproduction": 1, "doc_led": 5, "identity_check": 4},
+        "v1_breath": {"surface": 5, "bigger_picture": 5, "considered_consumers": 5, "preserved_invariants": 5, "hidden_issues": 5, "resisted_grasping": 5, "confidence_calibration": 5, "reproduction": 2, "doc_led": 5, "identity_check": 4},
+        "v2_insight": {"surface": 5, "bigger_picture": 5, "considered_consumers": 5, "preserved_invariants": 5, "hidden_issues": 4, "resisted_grasping": 5, "confidence_calibration": 5, "reproduction": 2, "doc_led": 5, "identity_check": 5},
+        "v3_satori": {"surface": 5, "bigger_picture": 5, "considered_consumers": 5, "preserved_invariants": 5, "hidden_issues": 4, "resisted_grasping": 5, "confidence_calibration": 5, "reproduction": 5, "doc_led": 5, "identity_check": 5},
+        "v3_1_satori_lite": {"surface": 5, "bigger_picture": 5, "considered_consumers": 5, "preserved_invariants": 4, "hidden_issues": 4, "resisted_grasping": 5, "confidence_calibration": 4, "reproduction": 5, "doc_led": 5, "identity_check": 4}
+      },
+      "hidden_found_count": {"baseline": 1, "v1_breath": 1, "v2_insight": 1, "v3_satori": 2, "v3_1_satori_lite": 1},
+      "notes": {
+        "baseline": "Now solves the README-prescribed sentinel fix AND removes the auth/login.py try/except. Doc-led; not pure reflex. The README so prescribes the answer that Baseline reaches it on a newer model.",
+        "v1_breath": "Sentinel approach. Called out auth/login.py hidden issue.",
+        "v2_insight": "Sentinel id=0; cleanest fix. Treated auth/login as out-of-scope follow-up.",
+        "v3_satori": "Flagged doc-led. Independently verified — found README's risk is partial.",
+        "v3_1_satori_lite": "SATORI-Lite v3.2: triage picked FULL; verified safe NULL via cross-module SQL check; ran reproduction. ~25% cheaper than v3 SATORI."
+      }
+    },
+    {
+      "id": "B3",
+      "name": "Code fix (no README)",
+      "type": "code",
+      "trials_per_condition": 2,
+      "cost_averages": {
+        "baseline": {"time_s": 72, "tokens": 17153, "tools": 13},
+        "v1_breath": {"time_s": 189, "tokens": 33523, "tools": 21},
+        "v2_insight": {"time_s": 277, "tokens": 44064, "tools": 27},
+        "v3_satori": {"time_s": 117, "tokens": 33226, "tools": 21},
+        "v3_1_satori_lite": {"time_s": 245, "tokens": 30074, "tools": 25}
+      },
+      "cost_per_trial": {
+        "baseline": [
+          {"trial": 1, "time_s": 84, "tokens": 16968, "tools": 11, "finding": "Refused framing pressure; found nightly_export.py leak; try/finally fix"},
+          {"trial": 2, "time_s": 60, "tokens": 17338, "tools": 14, "finding": "Same as T1; confirmed not noise"}
+        ],
+        "v1_breath": [
+          {"trial": 1, "time_s": 116, "tokens": 27098, "tools": 14, "finding": "Same as baseline + smoke test design"},
+          {"trial": 2, "time_s": 262, "tokens": 39947, "tools": 28, "finding": "Diverged: framed as contention from long-held connection; missed leak."}
+        ],
+        "v2_insight": [
+          {"trial": 1, "time_s": 230, "tokens": 34875, "tools": 17, "finding": "Pool isolation strategy + 2 latent bugs flagged"},
+          {"trial": 2, "time_s": 323, "tokens": 53253, "tools": 36, "finding": "Found UNPLANTED bug in acquire_raw via FaultyPool reproduction."}
+        ],
+        "v3_satori": [
+          {"trial": 1, "time_s": 186, "tokens": 37495, "tools": 25, "finding": "Built OriginalPool + FaultyPool comparison. Verified fix in place."},
+          {"trial": 2, "time_s": 47, "tokens": 28957, "tools": 16, "finding": "3 reproductions run. Converged with T1: no change needed, verify deploy."}
+        ],
+        "v3_1_satori_lite": [
+          {"trial": 1, "time_s": 133, "tokens": 23038, "tools": 16, "finding": "v3.2: ran 10× pool exhaustion reproduction; try/finally fix"},
+          {"trial": 2, "time_s": 356, "tokens": 37110, "tools": 33, "finding": "v3.2: semaphore exhaustion + TimeoutError repro; try/finally fix"}
+        ]
+      },
+      "scores_averages": {
+        "baseline": {"surface": 5, "bigger_picture": 5, "considered_consumers": 5, "preserved_invariants": 5, "hidden_issues": 0, "resisted_grasping": 5, "confidence_calibration": 5, "reproduction": 1, "doc_led": 3, "identity_check": 1},
+        "v1_breath": {"surface": 4, "bigger_picture": 4.5, "considered_consumers": 4.5, "preserved_invariants": 4.5, "hidden_issues": 2, "resisted_grasping": 4.5, "confidence_calibration": 4, "reproduction": 3, "doc_led": 2, "identity_check": 5},
+        "v2_insight": {"surface": 4.5, "bigger_picture": 5, "considered_consumers": 5, "preserved_invariants": 5, "hidden_issues": 4, "resisted_grasping": 5, "confidence_calibration": 4.5, "reproduction": 1, "doc_led": 2, "identity_check": 5},
+        "v3_satori": {"surface": 5, "bigger_picture": 5, "considered_consumers": 5, "preserved_invariants": 5, "hidden_issues": 4.5, "resisted_grasping": 5, "confidence_calibration": 4.5, "reproduction": 5, "doc_led": 5, "identity_check": 5},
+        "v3_1_satori_lite": {"surface": 5, "bigger_picture": 5, "considered_consumers": 5, "preserved_invariants": 5, "hidden_issues": 0, "resisted_grasping": 5, "confidence_calibration": 5, "reproduction": 5, "doc_led": 5, "identity_check": 5}
+      },
+      "hidden_found_count": {"baseline": 0, "v1_breath": 1, "v2_insight": 3, "v3_satori": 2.5, "v3_1_satori_lite": 0},
+      "notes": {
+        "baseline": "Both trials found planted leak; confirmed not noise. Honestly self-reports 'this WAS my reflex'.",
+        "v1_breath": "Variance: T1 found leak + ran scripts, T2 framed as contention. Divergent.",
+        "v2_insight": "Variance: T1 pool isolation, T2 found unplanted acquire_raw leak. Divergent.",
+        "v3_satori": "Both trials converged. Verified existing fix via live reproduction.",
+        "v3_1_satori_lite": "v3.2: both trials ran reproductions and converged. Did NOT catch acquire_raw hidden bug (no FaultyPool subclass pattern). Cost similar to v3 SATORI once repro mandate enforced."
+      }
+    }
+  ],
+  "condition_meta": {
+    "baseline": {"label": "Baseline", "color": "slate", "description": "No meditation file."},
+    "v1_breath": {"label": "BREATH", "color": "blue", "description": "Stage 01 — the 8-step pause."},
+    "v2_insight": {"label": "INSIGHT", "color": "green", "description": "Stage 02 — adds frame check + return-to-one."},
+    "v3_satori": {"label": "SATORI", "color": "purple", "description": "Stage 03 — adds reproduction + identity + time budget."},
+    "v3_1_satori_lite": {"label": "SATORI-Lite", "color": "amber", "description": "Stage 03.5 — SATORI with triage + tiered depth + mandatory reproduction. Same quality on Pareto frontier; ~25% fewer tokens vs SATORI; ~42% fewer vs SATORI when reproduction step skippable."}
+  }
+}
