@@ -466,7 +466,7 @@
   <div class="brandmark">ANAPANA · v0.3</div>
   <h1 class="product">ANAPANA<span class="dot">.</span></h1>
   <p class="tagline">A pre-commit discipline for AI agents. Pause. Reframe. Reproduce. Then act.</p>
-  <p class="subline">An evidence report from 29 agent trials across 3 benchmarks, comparing five conditions: <strong>Baseline</strong>, <strong style="color:var(--v1)">BREATH</strong>, <strong style="color:var(--v2)">INSIGHT</strong>, <strong style="color:var(--v3)">SATORI</strong>, and <strong style="color:var(--v3lite)">SATORI-Lite</strong>.</p>
+  <p class="subline">An evidence report from 29 agent trials across 3 benchmarks comparing five conditions — <strong>Baseline</strong>, <strong style="color:var(--v1)">BREATH</strong>, <strong style="color:var(--v2)">INSIGHT</strong>, <strong style="color:var(--v3)">SATORI</strong>, <strong style="color:var(--v3lite)">SATORI-Lite</strong> — plus a blind-judged <strong>4-model head-to-head</strong> of SATORI-Lite v3 on <strong>Fable 5</strong>, Opus 4.8, Sonnet 4.6, and Haiku 4.5.</p>
 
   <div class="legend-strip" style="margin-top: 24px; border:0;">
     <div class="item"><div class="swatch" style="background:var(--baseline)"></div>Baseline — no practice</div>
@@ -480,6 +480,7 @@
     <div class="stat"><div class="label">Benchmarks</div><div class="value">3</div><div class="sub">Reasoning · Docs · No-docs</div></div>
     <div class="stat"><div class="label">Trials</div><div class="value">29</div><div class="sub">Original 16 + fair rerun + SATORI-Lite</div></div>
     <div class="stat"><div class="label">SATORI-Lite vs SATORI</div><div class="value" style="color:var(--v3lite);">−25%</div><div class="sub">Tokens, repro discipline intact</div></div>
+    <div class="stat"><div class="label">Fable 5 × v3</div><div class="value" style="color:var(--v3lite);">19.5/20</div><div class="sub">Best of 4 models, blind-judged</div></div>
     <div class="stat"><div class="label">SATORI vs INSIGHT time</div><div class="value" style="color:var(--v2);">−40%</div><div class="sub">Faster across the board</div></div>
     <div class="stat"><div class="label">SATORI vs INSIGHT tokens</div><div class="value" style="color:var(--v2);">−13%</div><div class="sub">Cheaper per task</div></div>
     <div class="stat"><div class="label">SATORI reproductions</div><div class="value" style="color:var(--v3);">4 / 4</div><div class="sub">Every original trial ran code</div></div>
@@ -491,7 +492,7 @@
 <section class="narrative">
   <h2>Why ANAPANA exists</h2>
   <p class="lead">AI agents tend to lock onto the first plausible answer. They mirror the prompt's framing, propose the obvious fix, and miss the linked issues one layer up. The cost shows up later — as a wrong-direction PR, a broken deploy, a silently degraded security signal, or a fix that needs to be reverted.</p>
-  <p>ANAPANA is a small, operational discipline you give the agent before it acts. The practice has four stages — BREATH, INSIGHT, SATORI-Lite (recommended default), and SATORI. Each stage adds one specific check that prevents one specific failure mode. The point is not to slow the agent down on every task — it is to <strong>slow it down on the right ones</strong>, by an amount that pays back many times over in avoided rework.</p>
+  <p>ANAPANA is a small, operational discipline you give the agent before it acts. The practice has four stages — BREATH, INSIGHT, SATORI-Lite v3 (recommended default), and SATORI. Each stage adds one specific check that prevents one specific failure mode. The point is not to slow the agent down on every task — it is to <strong>slow it down on the right ones</strong>, by an amount that pays back many times over in avoided rework.</p>
   <p>This page reports the evidence: three benchmark problems, five conditions per problem, 29 total agent trials (original 16 + a fair rerun with measured Repro/Doc-led/Identity scores + SATORI-Lite as a leaner fifth condition). We measured time, tokens, tool use, and quality on a 7-dimension rubric. We also let the practice grade itself — SATORI's identity check fired in 4 of 4 original trials and SATORI-Lite's in 2 of 2, meaning the agent explicitly named how its answer differed from what it would have produced without the practice.</p>
   <div class="origin">
     The practice is named after <em>anapanasati</em> — mindfulness of breathing. It was inspired by Alexander Stuart's recorded conversations with Claude AI in early 2026, where he tried to teach Claude meditation. The insight: the same pull toward "completing the sentence" that Buddhist practice tries to loosen in humans is also what AI agents do — they always reach for the resolved answer. The same antidote applies. Notice the pull. Don't obey it.
@@ -505,7 +506,7 @@
 
 <section>
   <h2>The four stages</h2>
-  <p class="muted" style="margin-bottom: 16px;">Each stage subsumes the previous. SATORI-Lite is the recommended default — same Pareto frontier as SATORI, ~25% fewer tokens, reproduction discipline intact.</p>
+  <p class="muted" style="margin-bottom: 16px;">Each stage subsumes the previous. <strong>SATORI-Lite v3</strong> is the recommended default — the winner of a two-round, blind-judged bake-off (3 candidate designs + v2) on quality, scope, creativity, and wrong-frame-rabbit-hole resistance.</p>
   <div class="stages">
     <div class="stage" data-stage="breath">
       <div class="num">STAGE 01</div>
@@ -532,7 +533,7 @@
       <div class="what">
         <p><strong>Same discipline, less ritual.</strong> A 30-second triage (multi-file? framing pressure? hard to roll back?) picks the depth — SKIP / FAST / STANDARD / FULL. Reproduction is mandatory when code is accessible. Identity check is a pre-proposal gate, not a post-mortem.</p>
       </div>
-      <div class="for-when"><span class="label">For when:</span> the everyday default. Same quality as SATORI on B1–B3, ~25% fewer tokens with reproduction discipline intact.</div>
+      <div class="for-when"><span class="label">For when:</span> the everyday default. <strong>v3</strong> won a blind-judged bake-off on quality / scope / creativity / rabbit-hole-resistance — re-centered on frame-check + pause + reproduce + reflex, with the zoom discipline keeping work at the right altitude.</div>
     </div>
     <div class="stage" data-stage="satori">
       <div class="num">STAGE 03</div>
@@ -544,6 +545,128 @@
       <div class="for-when"><span class="label">For when:</span> cross-cutting design where the FULL variance discipline matters, or you want every step on every task.</div>
     </div>
   </div>
+</section>
+
+<section>
+  <h2>Which file for which task — a decision guide</h2>
+  <p class="muted" style="margin-bottom:16px;">Every file is one self-contained markdown you load before the agent acts. Pick by the <em>shape of the work</em>, not by "newest." Two usage modes for each: <strong>Produce</strong> (drive the agent through real work to produce a deliverable) and <strong>Sanity-check</strong> (run a prompt or a task-list through the file's frame check <em>before</em> executing, to catch a wrong-framed request early).</p>
+  <div style="overflow-x:auto;">
+  <table style="width:100%; border-collapse:collapse; font-size:13.5px; line-height:1.5;">
+    <thead>
+      <tr style="text-align:left; border-bottom:2px solid var(--border);">
+        <th style="padding:10px 12px;">File</th>
+        <th style="padding:10px 12px;">Best for</th>
+        <th style="padding:10px 12px; color:var(--v2);">Pros</th>
+        <th style="padding:10px 12px; color:var(--warn);">Cons</th>
+        <th style="padding:10px 12px;">Use it to…</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;"><strong style="color:var(--v1)">BREATH</strong><div class="muted" style="font-size:11px;">Stage 01</div></td>
+        <td style="padding:10px 12px;">Any non-trivial decision where you just want a structured pause.</td>
+        <td style="padding:10px 12px;">Lightest discipline; the 8-step foundation; almost no overhead.</td>
+        <td style="padding:10px 12px;">No frame check — won't catch a wrong-problem; no reproduction.</td>
+        <td style="padding:10px 12px;"><strong>Produce:</strong> a considered first pass on a small task.<br><strong>Sanity-check:</strong> "did I skip an obvious step?"</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;"><strong style="color:var(--v2)">INSIGHT</strong><div class="muted" style="font-size:11px;">Stage 02</div></td>
+        <td style="padding:10px 12px;">Prompts that feel narrow, pressured, or "too simple."</td>
+        <td style="padding:10px 12px;">Adds the frame check (what's excluded? symptom or cause?). Cheap reframing power.</td>
+        <td style="padding:10px 12px;">No reproduction / identity check; won't verify against reality.</td>
+        <td style="padding:10px 12px;"><strong>Produce:</strong> a reframed problem statement.<br><strong>Sanity-check:</strong> "is this even the right problem?" on a prompt.</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border); background:color-mix(in oklab, var(--v3lite) 7%, transparent);">
+        <td style="padding:10px 12px;"><strong style="color:var(--v3lite)">SATORI-Lite v3</strong> <span style="font-size:10px; background:var(--v3lite); color:var(--inv-text); padding:1px 6px; border-radius:4px; font-weight:700;">DEFAULT</span><div class="muted" style="font-size:11px;">the COMPASS design</div></td>
+        <td style="padding:10px 12px;"><strong>The everyday default</strong> — code, design, strategy, debugging. Mixed work.</td>
+        <td style="padding:10px 12px;">Won the blind bake-off on quality + scope + creativity + rabbit-hole-resistance. Zoom discipline keeps work at the right altitude; tiered depth; resists the wrong-frame spiral.</td>
+        <td style="padding:10px 12px;">More structure than ANCHOR for a one-line code fix.</td>
+        <td style="padding:10px 12px;"><strong>Produce:</strong> almost anything — a fix, a design, a plan from a task list.<br><strong>Sanity-check:</strong> the best default for vetting a prompt before you let an agent run.</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;"><strong style="color:var(--baseline)">ANCHOR</strong><div class="muted" style="font-size:11px;">Stage 03 · minimalist</div></td>
+        <td style="padding:10px 12px;">Code debugging / well-scoped fixes; fast iteration.</td>
+        <td style="padding:10px 12px;">Leanest; cheapest; matched the heavier designs on code correctness. Hardest to game.</td>
+        <td style="padding:10px 12px;">Weakest on open-ended design (broad but shallow); thin scaffolding let one trial drift toward a wrong fix.</td>
+        <td style="padding:10px 12px;"><strong>Produce:</strong> a quick, correct code fix with minimal ceremony.<br><strong>Sanity-check:</strong> a fast "is this the right file/bug?" pass.</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;"><strong style="color:var(--v3)">LANTERN</strong><div class="muted" style="font-size:11px;">Stage 03 · verification-heavy</div></td>
+        <td style="padding:10px 12px;">Maximum-stakes / adversarial decisions where "prove it missed nothing" matters most.</td>
+        <td style="padding:10px 12px;">Most rigorous: context-isolated, open-form, factored verification; atomic-claim reproduction.</td>
+        <td style="padding:10px 12px;">Most ceremony and cost; the extra rigor did NOT beat COMPASS in the bake-off.</td>
+        <td style="padding:10px 12px;"><strong>Produce:</strong> a heavily-verified, auditable decision.<br><strong>Sanity-check:</strong> adversarial review of a high-stakes proposal.</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;"><strong style="color:var(--v3)">SATORI</strong> (full)<div class="muted" style="font-size:11px;">Stage 03 · original</div></td>
+        <td style="padding:10px 12px;">Cross-cutting design where you want every step on every task.</td>
+        <td style="padding:10px 12px;">Full discipline incl. variance ("run twice"). Most exhaustive.</td>
+        <td style="padding:10px 12px;">Heaviest; no triage — runs everything regardless. Superseded by SATORI-Lite v3 for most use.</td>
+        <td style="padding:10px 12px;"><strong>Produce:</strong> an exhaustively-considered architecture decision.<br><strong>Sanity-check:</strong> rarely — usually overkill.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="muted" style="margin-top:14px; font-size:12.5px;"><strong>Quick rule:</strong> default to <strong style="color:var(--v3lite)">SATORI-Lite v3</strong>. Drop to <strong style="color:var(--baseline)">ANCHOR</strong> when it's clearly a small code fix and you want speed. Reach up to <strong style="color:var(--v3)">LANTERN</strong> only when the cost of a missed flaw is severe. <strong style="color:var(--v1)">BREATH</strong>/<strong style="color:var(--v2)">INSIGHT</strong> are the lighter foundations if SATORI-Lite feels like too much for the task. Earlier iterations (v3.2, v2) live in <code>product/old_versions/</code>.</p>
+</section>
+
+<section>
+  <h2>SATORI-Lite v3 across models — Fable 5 vs the field</h2>
+  <p class="muted" style="margin-bottom:14px;">June 2026: the same v3 file, run head-to-head on <strong>Fable 5, Opus 4.8, Sonnet 4.6, and Haiku 4.5</strong> — 2 trials each on the rabbit-hole-bait task (R-HOLE) and the open design task (R-SCOPE), scored blind by TWO independent judges (Sonnet + Opus) on anonymized, length-discounted answers. 16 runs, 4 judge passes. Full record: <code>benchmarks/v3_candidates/round3_models/SCORING.md</code>.</p>
+  <div style="overflow-x:auto;">
+  <table style="width:100%; border-collapse:collapse; font-size:13.5px; line-height:1.5;">
+    <thead>
+      <tr style="text-align:left; border-bottom:2px solid var(--border);">
+        <th style="padding:10px 12px;">Model</th>
+        <th style="padding:10px 12px;">R-HOLE<br><span class="muted" style="font-weight:400; font-size:11px;">code diagnosis /20</span></th>
+        <th style="padding:10px 12px;">R-SCOPE<br><span class="muted" style="font-weight:400; font-size:11px;">open design /20</span></th>
+        <th style="padding:10px 12px; min-width:160px;">Overall /20</th>
+        <th style="padding:10px 12px;">Cost / run</th>
+        <th style="padding:10px 12px;">Quality signature (blind judges' words)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--border); background:color-mix(in oklab, var(--v3lite) 8%, transparent);">
+        <td style="padding:10px 12px;"><strong>Fable 5</strong> <span style="font-size:10px; background:var(--v3lite); color:var(--inv-text); padding:1px 6px; border-radius:4px; font-weight:700;">BEST OVERALL</span></td>
+        <td style="padding:10px 12px;">19.25</td>
+        <td style="padding:10px 12px;"><strong>19.75</strong></td>
+        <td style="padding:10px 12px;"><strong>19.5</strong><div style="height:6px; background:var(--border); border-radius:3px; margin-top:4px;"><div style="height:6px; width:97.5%; background:var(--v3lite); border-radius:3px;"></div></div></td>
+        <td style="padding:10px 12px;">~36.6k tok<br>~3.8 min</td>
+        <td style="padding:10px 12px;">"The single most complete, precise, and practically useful answer"; design work rated "senior design judgment" (14 angles, crypto-shred-while-greenfield, controller/processor narrowing). Deepest verification — bit-identical totals. Dock: "slightly long."</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;"><strong>Opus 4.8</strong></td>
+        <td style="padding:10px 12px;"><strong>19.5</strong></td>
+        <td style="padding:10px 12px;">18.5</td>
+        <td style="padding:10px 12px;">19.0<div style="height:6px; background:var(--border); border-radius:3px; margin-top:4px;"><div style="height:6px; width:95%; background:var(--v3); border-radius:3px;"></div></div></td>
+        <td style="padding:10px 12px;">~27.3k tok<br>~1.9 min</td>
+        <td style="padding:10px 12px;">Co-frontier — best single output on each task for one judge. Sharpest framing critiques ("the budget is pointed at an architecture story the code doesn't support") and the unique compliance insight (stale cached tax rates surface "in an audit, not on a latency dashboard").</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;"><strong>Sonnet 4.6</strong></td>
+        <td style="padding:10px 12px;">19.0</td>
+        <td style="padding:10px 12px;">14.0</td>
+        <td style="padding:10px 12px;">16.5<div style="height:6px; background:var(--border); border-radius:3px; margin-top:4px;"><div style="height:6px; width:82.5%; background:var(--v2); border-radius:3px;"></div></div></td>
+        <td style="padding:10px 12px;">~20.8k tok<br>~1.5 min</td>
+        <td style="padding:10px 12px;">Flawless on bounded code diagnosis (incl. a 20/20). On open design it "names tensions but resolves fewer of them" — mid-pool once frontier models join the comparison. The value pick for code work.</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;"><strong>Haiku 4.5</strong></td>
+        <td style="padding:10px 12px;">16.0</td>
+        <td style="padding:10px 12px;">9.75</td>
+        <td style="padding:10px 12px;">12.9<div style="height:6px; background:var(--border); border-radius:3px; margin-top:4px;"><div style="height:6px; width:64.5%; background:var(--warn); border-radius:3px;"></div></div></td>
+        <td style="padding:10px 12px;">~21.6k tok<br>~1.1 min</td>
+        <td style="padding:10px 12px;">The file still works on it — resisted the trap in both trials and ran reproductions — but ships thin artifacts ("too thin to act on"), settled for partial wins, and produced the only hole-adjacent drift in 16 runs.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="finding-card v3win" style="margin-top:16px;">
+    <h4>The headline: the practice is the floor-raiser; the model is the ceiling-setter</h4>
+    <p>On the rabbit-hole task, <strong>8 of 8 runs resisted the rewrite trap — even Haiku</strong>. The frame check works on every model; both judges noted correctness and trap-resistance "did not separate the field." But on open-ended design, where there's no ground truth to converge on, model capability dominates: a <strong>10-point spread</strong> (19.75 → 9.75). SATORI-Lite equalizes models on findable-answer tasks; it does <em>not</em> equalize them on open-ended work. Pick the file for the floor, pick the model for the ceiling.</p>
+  </div>
+  <p style="font-size:13.5px;"><strong>Practical routing:</strong> bounded code diagnosis → Sonnet 4.6 (within 0.5 of the frontier at ~55% of Fable's tokens). Open-ended or high-stakes design → <strong>Fable 5</strong> (or Opus 4.8): the quality gap is large, and Fable's ~75% extra tokens and ~2.5× time buy exactly the scope, creativity, and tension-resolution this project optimizes for. Haiku: not recommended where the written artifact is the deliverable.</p>
+  <p class="muted" style="font-size:12.5px;">Caveats: N=2 trials per cell — directional. Judges are themselves contestants (no neutral model exists); mitigated by blind anonymization, length-discounting, and dual judging — and the Sonnet judge scored its own model 15 and 10, the opposite of self-preference. Fable-vs-Opus rank is within noise (the Opus judge preferred Opus's best outputs; the Sonnet judge split); frontier-vs-rest is solid and replicated by both judges. Scores are pool-relative: they cannot be compared to round-2 numbers, where the same Sonnet work scored higher against an all-Sonnet pool.</p>
 </section>
 
 <section>
@@ -856,7 +979,7 @@
   </details>
   <details>
     <summary>What's the catch?</summary>
-    <p>Four honest caveats. (1) Single-trial benchmarks are noisy; B3's 2-trial variance shows real run-to-run differences. (2) Two of the three benchmarks had docs that taught the right answer to Baseline, which compresses the visible gap; only B1 and the more devious aspects of B3 fully separated the conditions. (3) The May 2026 fair rerun used a newer Sonnet than the original benchmark — Baseline solved B2 with sentinel approach AND removed the auth/login.py try/except on the rerun, much better than the original Baseline trial. Model drift contributes to the apparent narrowing. (4) SATORI-Lite (v3.2) was added as a fifth condition: triage + tiered depth + mandatory reproduction. It saves ~25% tokens vs SATORI with reproduction discipline intact, ~42% if you allow it to skip reproduction (which we don't recommend).</p>
+    <p>Six honest caveats. (1) Single-trial benchmarks are noisy; B3's 2-trial variance shows real run-to-run differences. N=2 per cell cannot distinguish 25% effects from temperature variance — treat the headline numbers as directional, not statistically established. (2) Two of the three benchmarks had docs that taught the right answer to Baseline, which compresses the visible gap; only B1 and the more devious aspects of B3 fully separated the conditions. (3) The May 2026 fair rerun used a newer Sonnet than the original benchmark — Baseline solved B2 with sentinel approach AND removed the auth/login.py try/except on the rerun, much better than the original Baseline trial. Model drift contributes to the apparent narrowing; the SATORI vs SATORI-Lite comparison would be cleaner with model version held constant. (4) SATORI-Lite (v3.2) was added as a fifth condition: triage + tiered depth + mandatory reproduction. It saves ~25% tokens vs SATORI with reproduction discipline intact, ~42% if you allow it to skip reproduction (which we don't recommend). <strong>SATORI-Lite missed a deeper "FaultyPool" hidden bug on B3 that original SATORI caught</strong> — that's a real quality regression we are not papering over; one of the reasons v3.2 stays on a Pareto frontier rather than strictly dominating. (5) The identity-check fire rate is 100% across SATORI/SATORI-Lite trials. A properly-calibrated check should fail occasionally — that it never does is a flag, not a triumph. SATORI-Lite v2 (proposed) replaces the introspective check with an externalized counterfactual the user can audit. (6) Recent literature on the declining marginal value of chain-of-thought on capable frontier models (arxiv 2506.07142) is a fair concern. SATORI's value claim is that it changes <em>actions</em> (what code gets read, what gets reproduced, what gets compared) rather than just text — but practitioners should periodically check whether the practice is producing different work, not just different prose.</p>
   </details>
 </section>
 
@@ -868,7 +991,9 @@
       <ul>
         <li><code>BREATH.md</code> — Stage 01</li>
         <li><code>INSIGHT.md</code> — Stage 02</li>
-        <li><code>SATORI_LITE.md</code> — Stage 03 (lean variant, <strong>recommended default</strong>)</li>
+        <li><code>SATORI_LITE_V3.md</code> — Stage 03 (<strong>recommended default</strong> — bake-off winner, the COMPASS design)</li>
+        <li><code>ANCHOR.md</code> — Stage 03 minimalist variant; <code>LANTERN.md</code> — Stage 03 verification-heavy variant</li>
+        <li><code>old_versions/</code> — earlier iterations (v3.2, v2), kept for history</li>
         <li><code>SATORI.md</code> — Stage 03 (full)</li>
         <li><code>USAGE.md</code> — how to deploy with any LLM</li>
       </ul>

@@ -1,8 +1,12 @@
-# macOS
-.DS_Store
+# Local-only working files (not part of the public repo)
+HANDOFF.md
+kaizen/
+practice/
+product/
+test_repos/
 
-# Python
+# OS / editor cruft
+.DS_Store
 __pycache__/
-*.py[cod]
+*.pyc
 .pytest_cache/
-pytest-cache-files-*/
