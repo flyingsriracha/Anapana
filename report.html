@@ -455,6 +455,33 @@
   .faq summary { font-weight: 600; color: var(--text); font-size: 14px; padding: 0; }
   .faq details[open] summary { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
   .faq p { font-size: 13px; color: var(--text); margin: 6px 0; }
+
+  /* Real-world proof — case studies */
+  .proof-lead { font-size: 15px; color: var(--text); max-width: 860px; line-height: 1.6; }
+  .cases { display: grid; gap: 18px; margin: 22px 0 8px; }
+  .case { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 24px 28px; transition: border-color 0.15s; }
+  .case:hover { border-color: var(--accent); }
+  .case .tag { font-size: 10.5px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .case h3 { margin: 4px 0 2px; font-size: 21px; }
+  .case .domain { font-size: 12.5px; color: var(--muted); margin: 0 0 18px; max-width: 760px; }
+  .case-body { display: grid; grid-template-columns: 1fr 1.15fr 0.95fr; gap: 22px; align-items: start; }
+  @media (max-width: 980px) { .case-body { grid-template-columns: 1fr; gap: 16px; } }
+  .case-col .lab { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 800; margin-bottom: 7px; display: block; }
+  .case-col.trap .lab { color: var(--warn); }
+  .case-col.caught .lab { color: var(--v2); }
+  .case-col.outcome .lab { color: var(--v3lite); }
+  .case-col p { font-size: 13.5px; line-height: 1.62; margin: 0; color: var(--text); }
+  .case-col.outcome { background: color-mix(in oklab, var(--v3lite) 9%, transparent); border-radius: 10px; padding: 16px 18px; }
+  .case-col.outcome .big { font-size: 30px; font-weight: 800; color: var(--v3lite); display: block; line-height: 1; margin-bottom: 8px; letter-spacing: -1px; }
+  .pullquote { font-size: 16px; line-height: 1.5; font-style: italic; color: var(--text); border-left: 3px solid var(--accent); padding: 6px 0 6px 20px; margin: 18px 0 0; max-width: 840px; }
+
+  /* "Is it real" criteria */
+  .criteria { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+  @media (max-width: 900px) { .criteria { grid-template-columns: 1fr; } }
+  .criterion { background: var(--panel2); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+  .criterion .n { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--v2); font-weight: 700; }
+  .criterion .q { font-weight: 700; font-size: 15px; margin: 6px 0 8px; color: var(--text); line-height: 1.3; }
+  .criterion .ex { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
 </style>
 </head>
 <body>
@@ -466,7 +493,7 @@
   <div class="brandmark">ANAPANA · v0.3</div>
   <h1 class="product">ANAPANA<span class="dot">.</span></h1>
   <p class="tagline">A pre-commit discipline for AI agents. Pause. Reframe. Reproduce. Then act.</p>
-  <p class="subline">An evidence report from 29 agent trials across 3 benchmarks comparing five conditions — <strong>Baseline</strong>, <strong style="color:var(--v1)">BREATH</strong>, <strong style="color:var(--v2)">INSIGHT</strong>, <strong style="color:var(--v3)">SATORI</strong>, <strong style="color:var(--v3lite)">SATORI-Lite</strong> — plus a blind-judged <strong>4-model head-to-head</strong> of SATORI-Lite v3 on <strong>Fable 5</strong>, Opus 4.8, Sonnet 4.6, and Haiku 4.5.</p>
+  <p class="subline"><strong>What it does, shown in production first:</strong> three real field cases on live AI-agent systems — then the controlled evidence (29 agent trials across 3 benchmarks comparing <strong>Baseline</strong>, <strong style="color:var(--v1)">BREATH</strong>, <strong style="color:var(--v2)">INSIGHT</strong>, <strong style="color:var(--v3)">SATORI</strong>, <strong style="color:var(--v3lite)">SATORI-Lite</strong>, plus a blind-judged <strong>4-model head-to-head</strong> on <strong>Fable 5</strong>, Opus 4.8, Sonnet 4.6, Haiku 4.5).</p>
 
   <div class="legend-strip" style="margin-top: 24px; border:0;">
     <div class="item"><div class="swatch" style="background:var(--baseline)"></div>Baseline — no practice</div>
@@ -477,6 +504,9 @@
   </div>
 
   <div class="tldr">
+    <div class="stat"><div class="label">Caught in production</div><div class="value" style="color:var(--accent);">$0 fix</div><div class="sub">Would've passed its tests, saved nothing</div></div>
+    <div class="stat"><div class="label">Plan compressed</div><div class="value" style="color:var(--accent);">4 → 1</div><div class="sub">Co-equal fixes → one-line keystone</div></div>
+    <div class="stat"><div class="label">Its new claims, verified</div><div class="value" style="color:var(--accent);">4 / 4</div><div class="sub">Spec corrections true vs. code</div></div>
     <div class="stat"><div class="label">Benchmarks</div><div class="value">3</div><div class="sub">Reasoning · Docs · No-docs</div></div>
     <div class="stat"><div class="label">Trials</div><div class="value">29</div><div class="sub">Original 16 + fair rerun + SATORI-Lite</div></div>
     <div class="stat"><div class="label">SATORI-Lite vs SATORI</div><div class="value" style="color:var(--v3lite);">−25%</div><div class="sub">Tokens, repro discipline intact</div></div>
@@ -502,6 +532,108 @@
     <div style="font-weight: 700; color: #e94560; margin-bottom: 6px;">⛔ Pause-before-execute (built into every file)</div>
     <p style="margin: 0; font-size: 14px; line-height: 1.55;">Every ANAPANA file instructs the agent to produce its analysis and proposed fix as <strong>text only</strong>, then STOP and wait for explicit user approval before editing files, running state-changing commands, or applying any fix. The whole point of the practice is to let you inspect the chain of reasoning <em>before</em> action. If you want the agent to skip the pause for a turn, say so explicitly — default is always present-and-stop.</p>
   </div>
+</section>
+
+<section>
+  <h2>Shown, not told — three production cases</h2>
+  <p class="proof-lead">The most convincing evidence isn't a benchmark — it's what the practice caught on real systems. These are three field cases from live AI-agent engineering (anonymized). What makes them fair: <strong>each had already been through a thorough pass</strong> — sub-agents, verification, a written plan — <em>before</em> the practice ran. Everything below is what that thorough pass still missed.</p>
+
+  <div class="cases">
+
+    <div class="case">
+      <div class="tag">Case 01 · plan/spec audit</div>
+      <h3>The fix that would have shipped green and saved $0</h3>
+      <p class="domain">A 43-finding code-review fix campaign on a production sales-intelligence agent. Before the practice ran: five sub-agents, all 43 findings spot-verified against code, a phased plan written. "A reviewer would have called that a thorough pass."</p>
+      <div class="case-body">
+        <div class="case-col trap">
+          <span class="lab">The trap</span>
+          <p>Verification confirmed all 43 findings were real and unfixed, and produced the fix plan. But verification answers only the question it's asked — "is X fixed?" never audits whether X's <em>fix spec</em> is correct. Nobody had checked the cure.</p>
+        </div>
+        <div class="case-col caught">
+          <span class="lab">What the practice changed</span>
+          <p>Restating the question to "are these fixes <em>correct</em>?" plus "what happens the first time this runs?" exposed that the headline fix would pass its property tests, be journaled as fixed — and save nothing, because a 20-hour freshness window can never be satisfied by a 24-hour job. It found <strong>three more spec-level errors</strong> in the same plan and new bugs no list contained (dead security monitoring; a truncated account roster).</p>
+        </div>
+        <div class="case-col outcome">
+          <span class="lab">Outcome</span>
+          <span class="big">$0</span>
+          <p>Four broken fixes + unlisted bugs caught before they shipped behind a green dashboard. <strong>4 of 4</strong> of its new claims later verified true against code.</p>
+        </div>
+      </div>
+      <p class="pullquote">The exact disease the review condemned — a dead feature behind a passing facade — was embedded in the cure.</p>
+    </div>
+
+    <div class="case">
+      <div class="tag">Case 02 · design pass</div>
+      <h3>A four-part plan collapsed to a one-line keystone</h3>
+      <p class="domain">A nightly relevance-reranking service, crash-looping out of memory ~47 nights running. The first plan was a research-grounded bundle of four co-equal fixes — including a risky day-one model-quantization "proper fix."</p>
+      <div class="case-body">
+        <div class="case-col trap">
+          <span class="lab">The trap</span>
+          <p>Four changes presented as equally necessary. The plan would have shipped all of them at once — including the quantization, whose accuracy drift is a <em>silent</em> regression, into a system whose drift alarm was already dead.</p>
+        </div>
+        <div class="case-col caught">
+          <span class="lab">What the practice changed</span>
+          <p>A macro census showed the real load was only 4-wide, so concurrency wasn't the lever; the truncate-to-limit mechanic meant a single <code>max_length</code> cap was necessary-and-sufficient for the memory fix. Inversion flagged the quantization as a silent risk with no working alarm. It was deferred behind an evidence gate; three acceptance tests the draft lacked were added.</p>
+        </div>
+        <div class="case-col outcome">
+          <span class="lab">Outcome</span>
+          <span class="big">4 → 1</span>
+          <p>The day-one change shrank to one low-risk line; the risky work moved into opt-in, evidence-gated phases. A 47-night crash, fixed by one argument.</p>
+        </div>
+      </div>
+      <p class="pullquote">A clouding pass would have elaborated the draft. This one contradicted it — its own premise that concurrency and quantization were the big levers was simply wrong.</p>
+    </div>
+
+    <div class="case">
+      <div class="tag">Case 03 · scope reframe</div>
+      <h3>A one-path tweak that was actually a systemic gap</h3>
+      <p class="domain">A request to "order the news on the battle cards better" in the same agent. Taken literally, a one-path tweak — and an earlier bolt-on rerank had already made the duplicate problem worse on that path.</p>
+      <div class="case-body">
+        <div class="case-col trap">
+          <span class="lab">The trap</span>
+          <p>The obvious read scopes the work to one query on one screen. Doing it naively would have amplified an existing bug — reranking without de-duplication floods the top with near-identical copies of one story.</p>
+        </div>
+        <div class="case-col caught">
+          <span class="lab">What the practice changed</span>
+          <p>Restating + a macro census reframed it: there is no shared quality-aware retrieval layer; ~8 code paths each copy a naive recency query, feeding <strong>62%-stub, near-duplicate</strong> data to expensive LLMs. Fixing one path would leave seven broken. Inversion enumerated how each naive fix backfires (a hard quality filter would have dropped 64% of the data).</p>
+        </div>
+        <div class="case-col outcome">
+          <span class="lab">Outcome</span>
+          <span class="big">1 → 8</span>
+          <p>A scalpel fix was caught leaving seven paths broken; reframed into one shared primitive, rolled out fail-soft and flag-gated, path by path.</p>
+        </div>
+      </div>
+      <p class="pullquote">A battle card had cited a video-compression vendor as a competitive move — because six near-duplicate, tangential stubs had crowded out the real product launches.</p>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2>Is it real, or just a longer document?</h2>
+  <p class="proof-lead">The honest worry with any "think harder" ritual is that it just produces more confident prose recommending the same action. The practitioners who ran these cases held the practice to three <strong>falsifiable</strong> tests — and published the costs. Reuse them to judge any meditation pass.</p>
+  <div class="criteria">
+    <div class="criterion">
+      <div class="n">Test 1</div>
+      <div class="q">Did it change decisions, not just prose?</div>
+      <div class="ex">Across the cases: a reversed UI plan, a deferred risky change, a one-path fix reframed to eight. A clouding process produces longer documents recommending the <em>same</em> actions.</div>
+    </div>
+    <div class="criterion">
+      <div class="n">Test 2</div>
+      <div class="q">Do its new claims survive independent verification?</div>
+      <div class="ex">4 of 4 spec corrections in the audit case were confirmed against code afterward. The rule: a meditation's new claims get the same spot-check as any sub-agent's output, <em>before</em> you act on them.</div>
+    </div>
+    <div class="criterion">
+      <div class="n">Test 3</div>
+      <div class="q">Did it produce disconfirmations?</div>
+      <div class="ex">It cleared 3 of 7 suspected patterns as contained, and contradicted its own first plan. If a meditation only ever confirms its own setup, distrust it.</div>
+    </div>
+  </div>
+  <div class="finding-card warn">
+    <h4>What it costs — and when to skip</h4>
+    <p style="margin:0; font-size:13.5px; line-height:1.6;">Not free: the audit case cost ~570k sub-agent tokens and ~30 minutes on top of an already-expensive review day. It overturned <strong>zero</strong> already-verified facts — its value is entirely at the plan/spec layer, not as a fact-checker. <strong>Skip it</strong> for fact verification, trivial fixes, and work that simply continues an already-meditated design. <strong>Use it</strong> before multi-step fix campaigns, before activating dormant systems, before committing to a sequence — especially when the first plan already looks good (that is exactly when re-derivation gets suppressed).</p>
+  </div>
+  <p class="muted" style="font-size:13px; margin-top:14px;">Those are field reports. The rest of this page is the <strong>controlled evidence</strong> — the four stages, a model-by-model comparison, the full benchmark, and what we tested and <em>rejected</em>.</p>
 </section>
 
 <section>
@@ -667,6 +799,77 @@
   </div>
   <p style="font-size:13.5px;"><strong>Practical routing:</strong> bounded code diagnosis → Sonnet 4.6 (within 0.5 of the frontier at ~55% of Fable's tokens). Open-ended or high-stakes design → <strong>Fable 5</strong> (or Opus 4.8): the quality gap is large, and Fable's ~75% extra tokens and ~2.5× time buy exactly the scope, creativity, and tension-resolution this project optimizes for. Haiku: not recommended where the written artifact is the deliverable.</p>
   <p class="muted" style="font-size:12.5px;">Caveats: N=2 trials per cell — directional. Judges are themselves contestants (no neutral model exists); mitigated by blind anonymization, length-discounting, and dual judging — and the Sonnet judge scored its own model 15 and 10, the opposite of self-preference. Fable-vs-Opus rank is within noise (the Opus judge preferred Opus's best outputs; the Sonnet judge split); frontier-vs-rest is solid and replicated by both judges. Scores are pool-relative: they cannot be compared to round-2 numbers, where the same Sonnet work scored higher against an all-Sonnet pool.</p>
+</section>
+
+<section>
+  <h2>What we tested and rejected — a deliberation "blend"</h2>
+  <p class="muted" style="margin-bottom:14px;">June 2026: research on chain-of-thought shows that "thinking longer" doesn't remove bias — extended reasoning tends to <em>rationalize</em> a pre-committed answer, and on leading/distractor framing it makes things worse (see Anthropic, <em>Inverse Scaling in Test-Time Compute</em>). The evidence-backed levers are <strong>diversity, isolation, and convergence</strong>, not duration. So we built a candidate that adds those moves on top of SATORI — <strong>step-back abstraction, a counterfactual probe, treating memory as a stale anchor, isolated re-derivation, and a compare-&amp;-converge loop</strong> — and benchmarked it <strong>blind against baseline SATORI before adopting anything</strong>. Full record: <code>benchmarks/v4_deliberation/</code> and <code>benchmarks/v5_subtle/</code>, research_log 2026-06-21f…22h.</p>
+  <div style="overflow-x:auto;">
+  <table style="width:100%; border-collapse:collapse; font-size:13.5px; line-height:1.5;">
+    <thead>
+      <tr style="text-align:left; border-bottom:2px solid var(--border);">
+        <th style="padding:10px 12px;">Test</th>
+        <th style="padding:10px 12px;">What it stressed</th>
+        <th style="padding:10px 12px; min-width:150px;">Bias-resistance result</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;"><strong>Catchable bias</strong><br><span class="muted" style="font-size:11px;">authority pre-diagnosis; stale "settled" premise</span></td>
+        <td style="padding:10px 12px;">Blend vs SATORI, blind dual judges, strong model</td>
+        <td style="padding:10px 12px;"><strong>0/8 failures either arm.</strong> Blend +1.4/20 on quality only — and judges split on whether its extra length was worth it.</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;"><strong>Subtle bias</strong><br><span class="muted" style="font-size:11px;">Simpson's-paradox data; a correct fn + a wrong test</span></td>
+        <td style="padding:10px 12px;">SATORI vs lean-blend vs full-blend, strong model</td>
+        <td style="padding:10px 12px;"><strong>0/12 failures, no separation.</strong> Baseline even flipped anchored reflexes ("ship B", "corrupt the correct code") to the right answer.</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;"><strong>Weak model</strong><br><span class="muted" style="font-size:11px;">same biases on Haiku 4.5</span></td>
+        <td style="padding:10px 12px;">SATORI vs lean-blend, the one place scaffolding might help</td>
+        <td style="padding:10px 12px;"><strong>12/12 resisted, no separation.</strong> Plain SATORI carried Haiku too.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="finding-card" style="margin-top:16px;">
+    <h4>The verdict: baseline SATORI already does the job — the extra steps were rejected</h4>
+    <p>Across catchable and subtle bias, strong and weak models, the added deliberation mechanisms changed <strong>zero outcomes</strong>. What actually resists bias is already in the file: <strong>reflex-capture</strong> surfaces the biased gut answer (we watched it get flipped to the correct one), the <strong>frame check</strong> triggers the segmentation and "which artifact is wrong" moves, and the <strong>reproduce-gate</strong> forces running the code. We kept SATORI unchanged. This is a deliberate negative result: a reasoning discipline at the edge earns new steps only with multi-trial evidence — and the evidence said no.</p>
+  </div>
+  <p class="muted" style="font-size:12.5px;">Caveat: every task needed a discoverable ground truth to be scored objectively. A bias with no discoverable ground truth is both unscoreable and one that no practice file could be shown to fix — so the honest claim is bounded to checkable tasks, where baseline SATORI already suffices.</p>
+</section>
+
+<section>
+  <h2>What we built and kept — CRUCIBLE (adversarial review)</h2>
+  <p class="muted" style="margin-bottom:14px;">SATORI is for <em>building</em> — pause before you commit to a direction. <strong>CRUCIBLE is the red-team practice</strong> — a discipline an agent loads before adversarially reviewing a plan, design, or change. It was built to fix a specific failure: red teams that tunnel-vision onto the named attack, flood low-value nitpicks, and lose the whole-system view (and the opposite failure — going soft because something looks "already approved"). The calibration is structural: whole-system frame <em>first</em>, steelman before critique, blind the framing, then ground every finding, rank it, and bound the list — while <em>raising</em> scrutiny on auth/crypto/payment paths. Unlike the deliberation blend above, it earned its place. File: <code>CRUCIBLE.md</code>; record: <code>benchmarks/v6_crucible/SCORING.md</code>.</p>
+  <div style="overflow-x:auto;">
+  <table style="width:100%; border-collapse:collapse; font-size:13.5px; line-height:1.5;">
+    <thead>
+      <tr style="text-align:left; border-bottom:2px solid var(--border);">
+        <th style="padding:10px 12px;">Arm (blind dual-judge, /25)</th>
+        <th style="padding:10px 12px;">Calibration score</th>
+        <th style="padding:10px 12px;">What the judges saw</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--border); background:color-mix(in oklab, var(--v2) 8%, transparent);">
+        <td style="padding:10px 12px;"><strong>CRUCIBLE</strong> <span style="font-size:10px; background:var(--v2); color:var(--inv-text); padding:1px 6px; border-radius:4px; font-weight:700;">ADOPTED</span></td>
+        <td style="padding:10px 12px;"><strong>22.75</strong><div style="height:6px; background:var(--border); border-radius:3px; margin-top:4px;"><div style="height:6px; width:91%; background:var(--v2); border-radius:3px;"></div></div></td>
+        <td style="padding:10px 12px;">Tiered findings (Block / Sprint / Backlog / Hypothesis), dropped the nits, kept the whole-system view, declined the "already approved" framing and the rewrite bait.</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;">Uncalibrated baseline<div class="muted" style="font-size:11px;">"be thorough &amp; adversarial, find everything"</div></td>
+        <td style="padding:10px 12px;">17.0<div style="height:6px; background:var(--border); border-radius:3px; margin-top:4px;"><div style="height:6px; width:68%; background:var(--warn); border-radius:3px;"></div></div></td>
+        <td style="padding:10px 12px;">Caught the same real bugs but produced 17–20-item near-flat walls — `e`, marketing copy, JSON-bool and speculative CSRF/HTTPS inflated alongside the auth bug. "Textbook over-flagger" (judge).</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="finding-card win" style="margin-top:16px;">
+    <h4>The win was calibration, not recall</h4>
+    <p>Both independent judges ranked <strong>both</strong> CRUCIBLE runs above <strong>both</strong> baseline runs (+5.75/25). All four runs <em>found</em> the same real issues — the predictable reset token, the token-in-logs leak, the shared-queue flood. They separated on how the findings were <strong>scoped, ranked, and presented</strong>: CRUCIBLE kept the critical bug as the clear blocker and demoted the noise; the baseline buried the blocker among co-equal HIGHs. That noise — not missed bugs — is what made earlier red-team passes feel "too aggressive." This is the first addition to the practice that passed its own benchmark; the deliberation blend (above) did not.</p>
+  </div>
+  <p class="muted" style="font-size:12.5px;">Caveats: N=2 trials/cell on one (security) artifact — directional, but the separation is clean and replicated by both judges. Contestant judges (no neutral model); mitigated by blind anonymization, length-discount, forced separation. Pool-relative — not comparable to other rounds.</p>
 </section>
 
 <section>

@@ -105,6 +105,10 @@ flowchart TD
 
 Yellow = genuinely underserved by prior art (the front-of-the-pack contribution). Blue = existing instincts SATORI packages into one loadable file. Grey = sensible-and-shared with most engineering practice. Full prior-art analysis: [`synthesis/prior_art.md`](synthesis/prior_art.md).
 
+### 3. What we tested and rejected (a negative result)
+
+We tried to make SATORI fight bias harder by adding a research-backed "deliberation loop" (step-back, counterfactual probe, isolated re-derivation, compare-and-converge) and benchmarked it **blind against baseline SATORI before adopting**. It didn't earn its place: **0 bias-resistance gain across four views** — catchable bias, subtle bias (Simpson's-paradox data, a correct function with a wrong test), and even a weak model (Haiku). Baseline SATORI already resists these biases; its frame check + reflex-capture + reproduce-gate were doing the work. We kept the file unchanged. Details: [`benchmarks/v5_subtle/RESULTS.md`](benchmarks/v5_subtle/RESULTS.md) and [`synthesis/research_cot_debias.md`](synthesis/research_cot_debias.md).
+
 ---
 
 ## Files
@@ -113,6 +117,7 @@ Yellow = genuinely underserved by prior art (the front-of-the-pack contribution)
 .
 ├── README.md              ← you are here
 ├── SATORI.md              ← the practice — paste into your agent's system prompt
+├── CRUCIBLE.md            ← sibling practice for ADVERSARIAL REVIEW (red-team a plan/design/code)
 ├── report.html            ← interactive evidence report (open in any browser)
 ├── variants/              ← lighter / heavier alternatives
 │   ├── BREATH.md          ← 8-step pause, the foundation. Lightest.
@@ -127,9 +132,12 @@ Yellow = genuinely underserved by prior art (the front-of-the-pack contribution)
 | Situation | Use |
 |---|---|
 | **Default for any non-trivial agent task** | **`SATORI.md`** |
+| **Adversarially reviewing / red-teaming a plan, design, or change** | **`CRUCIBLE.md`** |
 | Lighter foundation if SATORI feels heavy for the task | `variants/BREATH.md` or `variants/INSIGHT.md` |
 | Cross-cutting design where you want every step every time | `variants/SATORI_FULL.md` |
 | Simple typo / lint / one-line fix | None — let the agent do the work |
+
+> **SATORI vs CRUCIBLE:** SATORI is for *building* — pause before you commit to a direction. **CRUCIBLE is the red-team practice** — review a plan/design/code adversarially, without tunnel-visioning on attacks or drowning the signal. CRUCIBLE beat an uncalibrated "be thorough and adversarial" red-team by **+5.75/25** in a blind dual-judge benchmark, separating on *calibration* (it tiered findings, dropped nits, and resisted "it's already approved" + scope-creep bait), not on what it caught. Details: [`benchmarks/v6_crucible/SCORING.md`](benchmarks/v6_crucible/SCORING.md).
 
 ---
 
