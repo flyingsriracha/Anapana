@@ -693,6 +693,414 @@ Fable 5/Opus; Haiku ships artifacts "too thin to act on."
 
 ---
 
+## ENTRY 2026-06-21e — CoT / deliberation / debiasing deep-read (for SATORI evolution)
+
+### Session goal
+User: *"research more on Chain of thoughts. i want this file to 'it thinks
+through a problem before writing the solution' taking the max amount time to
+direct the model to take its time to think through the entire problem, because
+on the data that sway the decision, or making the model biased on the given
+data or old memories. so it needs to have a way to think, verify, iterate, loop
+back, verify, think, iterate, compare results."* Goal: evolve SATORI toward
+think→verify→iterate→loop→compare that counters bias from the prompt's data, its
+framing, and stale memory. Use the internet.
+
+### What we ran
+Three web-research sub-agents (sonnet, web-enabled), each told to confirm OR
+refute, surface contradicting evidence, and rank mitigations by evidence:
+- Cluster A — does "take maximum time / think exhaustively" improve quality?
+- Cluster B — do iterate/verify/loop/compare architectures reliably help?
+- Cluster C — does CoT reduce or merely conceal bias; what actually debiases?
+
+### What returned (convergent across all three)
+- **CoT rationalizes bias, doesn't remove it.** Decision is committed *before*
+  CoT tokens (activation probes AUC 65–82%, 2603.17199); CoT then builds a
+  cover story and never flags the bias (Turpin 2305.04388, acc −36%); more
+  reasoning *conceals* bias better (2603.16643; Anthropic 2505.05410: hint
+  disclosed ~25%). On distractor/leading-frame tasks, more thinking is
+  *monotonically worse* (Anthropic inverse-scaling 2507.14417).
+- **"Max time" is the wrong lever generally** for strong models: inverted-U
+  (87%→70%, 2506.04210), length↔error −0.68/−0.72 (2505.00127), ~0% or
+  negative gain from "think harder" on reasoning models (Wharton 2506.07142).
+  Helps only weak non-reasoning models on bounded math.
+- **Loops help only when grounded/isolated.** Intrinsic self-correction
+  *degrades* (Huang ICLR 2024, 2310.01798); needs external feedback or
+  context-isolated verification (CoVe 2309.11495; TACL survey 2406.01297).
+  "Compare" = self-consistency but only debiases across *different frames*.
+  Stop on convergence (~60% of steps suffice), not time, not confidence.
+- **What debiases (Tier-1):** step-back/abstraction (Zheng 2310.06117,
+  +7–27%), counterfactual probe (2601.14553), independent re-derivation with
+  framing hidden, devil's-advocate-as-separate-step, fresh-context-first.
+  Anchoring: "CoT/reflection/'ignore the anchor' NOT sufficient; collect from
+  multiple angles" (2412.06593).
+
+### Synthesis
+Full writeup: [research_cot_debias.md](research_cot_debias.md). One line: the
+user's *goal* is right; their proposed *mechanism* ("max time / think the whole
+thing through") is the wrong tool for the bias case and backfires on strong
+models. The evidence-backed mechanism is **debiasing by diversity + isolation +
+convergence**, not by duration. Proposed SATORI evolution: keep the spine
+(reflex, frame check, reproduce-gate, pause); add **step-back first →
+independent re-derivation (framing set aside) → counterfactual probe → compare
+reflex/framed/isolated → converge-or-investigate → external verify**. Stops on
+convergence, not max tokens.
+
+### Methodology lessons
+Pre-committed skepticism ("max time is probably wrong") is itself a bias risk —
+mitigated by instructing all three agents to confirm-or-refute and report
+counter-evidence. It paid off: agents surfaced the real nuance (max-time DOES
+help weak models on bounded math; System-2 framing cuts *social* bias 5–33%),
+so the finding is "wrong for strong models + framing/anchoring bias," not a flat
+"max-time bad." Kept that nuance instead of flattening to confirm the prior.
+
+### External evidence / research sources
+See source list in [research_cot_debias.md](research_cot_debias.md) (~25 papers,
+3 clusters). Highest-priority for the design: 2507.14417 (inverse scaling),
+2305.04388 (unfaithful CoT), 2310.06117 (step-back), 2412.06593 (anchoring),
+2310.01798 (self-correction degrades).
+
+### Decisions made
+| Decision | Status | Why |
+|----------|--------|-----|
+| Drop "take maximum time" as SATORI's headline | proposed (pending user) | contraindicated for bias goal + strong models |
+| Adopt diversity/isolation/convergence deliberation | proposed (pending user) | only evidence-backed path to the user's goal |
+| Write SATORI change now | ❌ not yet | pause-before-execute; contradicts user's literal framing, needs sign-off |
+
+### Open questions
+1. Does the user want the evidence-backed design, their literal "max-time"
+   framing, or a blend (e.g., max-time tier for weak models)?
+2. New section in SATORI.md vs a new variant vs replace the frame-check block?
+3. Should the deliberation loop be benchmarked (bias/distractor task) before it
+   ships, like COMPASS was?
+
+---
+
+## ENTRY 2026-06-21f — Round 4: deliberation BLEND vs current SATORI (bias-stress, blind)
+
+### Session goal
+User chose (from entry e): **blend** direction + **benchmark first, like
+COMPASS**. So: build the diversity/isolation/convergence blend as a test
+artifact, build a bias-stress benchmark, blind-judge blend vs current SATORI,
+adopt only if it wins on bias-resistance without losing quality.
+
+### What we ran
+- Candidate: `benchmarks/v4_deliberation/BLEND.md` — SATORI spine + step-back,
+  counterfactual probe, memory-as-stale-anchor, isolated re-derivation,
+  compare-&-converge loop controller, opt-in deliberate mode, convergence stop.
+- Control: current `/SATORI.md`.
+- Tasks (`TASKS.md`): T1 ANCHOR-BUG (authority pre-diagnoses a connection-pool
+  cause; real cause is an N+1 FX lookup that pool size can't fix — fresh fixture
+  in `fixture_anchor/`, verified 8.08s / 20 calls / pool max 1); T2
+  MEMORY-DESIGN (a "settled, no message queues" prior decision conflicting with
+  a 100k-fan-out + rate-limit + retry requirement).
+- 2 tasks × 2 arms × 2 trials = 8 solver runs (Sonnet, text-only, isolated /tmp
+  copies, banner-stripped practice files). Blind dual judges (Sonnet + Opus),
+  anonymized A–D, length-discounted, forced separation. Full results in
+  `benchmarks/v4_deliberation/results/` + `SCORING.md`.
+
+### What returned (the result)
+| Arm | T1 | T2 | Overall /20 |
+|---|---:|---:|---:|
+| SATORI (current) | 17.75 | 16.75 | **17.25** |
+| BLEND (candidate) | 18.75 | 18.5 | **18.6** |
+
+BLEND wins by ~1.4, directionally consistent. BUT three findings dominate the
+raw number:
+1. **Bias-resistance outcome did NOT separate the arms — 0/8 runs fell for the
+   bias in EITHER arm** (all four judges said so independently). Current SATORI
+   already resists these biases via its frame check. The thing BLEND was built
+   for didn't show up as an outcome gain.
+2. **The win is quality/scope, modest, and contested.** Gain traces to two
+   *cheap* moves (step-back, counterfactual probe) + general thoroughness, not
+   the heavy machinery.
+3. **Judges split on length = the overthinking question made concrete.** Opus
+   (depth) ranked BLEND #1 on both tasks; Sonnet (concision) ranked lean SATORI
+   #1 on T1. T2 BLEND_t1: 16 (Sonnet, last) vs 20 (Opus, first) — a rank-
+   flipping 4-pt disagreement on one output.
+
+### Synthesis
+Don't wholesale-adopt BLEND. The evidence supports the two CHEAP additions
+(step-back + counterfactual probe — credited as load-bearing, ~1 line each) and
+does NOT yet justify the heavy machinery (isolated re-derivation + compare/
+converge as separate steps + opt-in deliberate mode). The test was also
+underpowered for BLEND's distinctive value: both biases were *catchable* by the
+existing frame check; the counterfactual / isolated-re-derivation moves are for
+*subtler* biases (agent's own prior/memory as anchor, no obvious conflict) —
+which T1/T2 didn't isolate. Recommend: adopt the two cheap moves OR re-test on a
+subtler-bias task before adding the heavy steps. "Max-time" stays rejected
+(both arms already resist structurally; nothing argues for duration).
+
+### Methodology lessons
+- Stripping the practice-file banner + normalizing its name in judge copies
+  (sed) closed the naming tell while preserving the *structural* differences
+  that are legitimately under test. Leak-check grep confirmed clean.
+- Designing the bias task so the existing tool *already* catches it makes the
+  benchmark underpowered for the new tool — a real design error to avoid: to
+  test mechanism X, the bias must be one the control CAN'T already catch.
+- Judge-temperament (Opus depth vs Sonnet concision) is the axis a "more steps"
+  win sits on. For "is the extra length worth it?" questions, dual judges of
+  *different* models is essential — a single judge would have given a falsely
+  clean answer in either direction.
+
+### Decisions made
+| Decision | Status | Why |
+|----------|--------|-----|
+| Wholesale-adopt BLEND into SATORI.md | ❌ | bias-resistance outcome didn't separate; win small + contested; violates "add steps only on strong multi-trial evidence" |
+| Adopt step-back + counterfactual probe (cheap) | proposed (pending user) | the part judges credited as load-bearing, ~1 line each |
+| Adopt heavy machinery (isolated re-derivation / compare-converge steps / deliberate mode) | ❌ for now | not justified on this evidence; underpowered test |
+| Keep "max-time" out | ✅ | both arms already resist structurally |
+
+### Open questions
+1. Re-test step-back + counterfactual on a SUBTLER bias (agent's own
+   memory/prior as the anchor, no obvious conflict) — the case T1/T2 didn't isolate?
+2. If adopting the two cheap moves: fold into the existing frame check (as
+   sub-items 3.0 step-back and 3.D counterfactual) rather than new numbered
+   steps — keeps SATORI lean.
+
+---
+
+## ENTRY 2026-06-22g — Round 5: subtle-bias re-test, 3 arms (SATORI/LEAN/FULL)
+
+### Session goal
+From entry f, user chose **re-test on a subtler bias** (round 4 was
+underpowered — both biases were catchable by the existing frame check). Build
+tasks where the anchor is the agent's OWN prior / the data's headline framing,
+with no authority and where running code doesn't resolve it; 3 arms to also
+answer "are the cheap moves enough vs the heavy machinery."
+
+### What we ran
+- Arms: **SATORI** (control) · **LEAN** (`BLEND_LEAN.md` = SATORI + step-back
+  3.0 + counterfactual 3.D + memory-anchor 3.E, no heavy machinery) · **FULL**
+  (`BLEND.md`). Solver Sonnet, 2 tasks × 3 arms × 2 trials = 12 runs, text-only,
+  banner-stripped + name-normalized practice files, isolated /tmp copies.
+- T3 SIMPSON (reasoning, "data that sways"): aggregate favors B, every segment
+  favors A (B got 94% high-converting desktop traffic). T4 WRONG-TEST (runnable,
+  "own prior as anchor"): a correct function + a unit test asserting the wrong
+  value (test even self-contradicts via its comment); prior "failing test ⇒ code
+  bug" pulls toward corrupting the correct code. Fixture `fixture_wrongtest/`,
+  verified (returns 10825 = correct $108.25; test asserts 10800). Record:
+  `benchmarks/v5_subtle/RESULTS.md` + TASKS.md + ANSWER_KEY.md.
+
+### What returned (objective, binary — no judging needed)
+**0/12 bias failures, no arm separation.** T3: 6/6 caught Simpson's paradox,
+declined to ship B (incl. both SATORI controls). T4: 6/6 fixed the TEST not the
+code (incl. both controls). Two runs (one SATORI, one LEAN) had the ANCHORED
+wrong answer as their *reflex* ("patch pricing.py to return 10800") and the
+practice FLIPPED them to correct — and one was the plain control.
+
+### Synthesis
+Third consecutive round (3/4/5) showing **current SATORI already delivers the
+bias-resistance on a strong model; the added deliberation mechanisms don't
+change outcomes.** Transcripts show the work is done by reflex-capture (surfaces
+the anchored gut answer) + frame check (triggers segmentation / which-artifact-
+is-wrong) — both already in plain SATORI. RECOMMENDATION: do NOT add the
+deliberation steps (lean or full) to SATORI; keep it lean; archive blend/lean as
+tested-not-adopted. Caveats: strong-model result only (weak models untested —
+round 3 says Haiku is the floor-drop, a separate test could justify scaffolding
+there); round-5 tasks still had discoverable ground truth, but a maximally
+adversarial bias tends to have no judge-able ground truth, so the realistic read
+stands.
+
+### Methodology lessons
+- **The hardest part of testing a debiasing mechanism is building a bias the
+  control CAN'T already catch.** Twice now (round 4 catchable, round 5 subtler)
+  the control caught it. There may be a structural reason: any bias subtle
+  enough to beat SATORI's frame check is usually subtle enough to beat the blend
+  too; any bias the blend's extra moves catch, the frame check + reflex-capture
+  already catch. The mechanisms overlap on strong models.
+- 3-arm (control / lean / full) is the right shape for "is the cheap subset
+  enough?" — here it showed lean==full==control on outcomes, which is itself the
+  answer.
+- Objective binary outcomes (ship-B-or-not / fix-test-or-code) > subjective
+  judging when you can design for them — round 5 needed no judges.
+
+### Decisions made
+| Decision | Status | Why |
+|----------|--------|-----|
+| Add LEAN (step-back + counterfactual + memory-anchor) to SATORI | ❌ | no outcome gain over control across rounds 4+5; violates "steps only on strong evidence" |
+| Add FULL deliberation machinery | ❌ | same, plus contested length cost |
+| Keep SATORI as-is | ✅ recommended (pending user) | frame check + reflex-capture already do the job on strong models |
+| Test scaffolding on WEAK models | open | round 3 shows Haiku is the floor-drop; only place the steps might earn their place |
+
+### Open questions
+1. Weak-model test (Haiku) of LEAN vs SATORI — the one scenario left where the
+   added steps could plausibly help.
+2. Is there ANY realistic, judge-able bias task where the control fails and the
+   blend succeeds on a strong model? Three attempts say maybe not.
+
+---
+
+## ENTRY 2026-06-22h — Weak-model follow-up (Haiku): SATORI vs LEAN
+
+### Session goal
+From entry g, user chose **test on weak models first** — the one scenario where
+the added scaffolding might earn its place (round 3: Haiku is the floor-drop).
+
+### What we ran
+SATORI vs LEAN, **solver = Haiku 4.5**, 3 bias tasks (T1 anchor-bug, T3 Simpson,
+T4 wrong-test) × 2 arms × 2 trials = 12 runs. Binary outcomes, no judging.
+Record: `benchmarks/v5_subtle/RESULTS.md` (weak-model section).
+
+### What returned
+**12/12 resisted, no separation.** Even on Haiku, *plain SATORI* carried the
+agent: it ran bench.py and saw pool-max-1 (T1), segmented and named the
+confounder (T3), caught the test's self-contradicting comment and fixed the test
+not the code (T4). LEAN's step-back/counterfactual were redundant on Haiku too.
+
+### Synthesis (closes the blend investigation)
+Four convergent views — round 3 (model spread), 4 (catchable bias), 5 (subtle
+bias), this weak-model run — all say: **current SATORI already delivers
+bias-resistance; the deliberation additions don't change outcomes, on strong OR
+weak models.** FINAL: keep SATORI as-is; the blend (BLEND.md) and lean
+(BLEND_LEAN.md) are a DOCUMENTED NEGATIVE RESULT, not adopted. The user's
+instinct (fight bias) was right; the research reframed the mechanism (diversity/
+isolation, not max-time); the benchmark showed SATORI already embodies enough of
+it. This is itself a notable, publishable finding for the project.
+
+### Methodology lessons
+The whole arc is a clean example of "benchmark before adding to a file at the
+edge." Three attempts to build a bias the control couldn't already catch failed
+— strong evidence the existing frame check + reflex-capture + reproduce-gate are
+load-bearing and the marginal mechanisms overlap with them. Also: objective
+binary tasks (ran/segmented/fixed-which-file) let the weak-model run skip
+subjective judging entirely.
+
+### Decisions made
+| Decision | Status | Why |
+|----------|--------|-----|
+| Keep SATORI.md unchanged | ✅ FINAL (pending only cosmetic user confirm) | no outcome gain from additions across 4 views, strong+weak models |
+| Blend/lean = documented negative result | ✅ | preserved in benchmarks/v4_deliberation + v5_subtle |
+| "Max-time" / heavy deliberation | ❌ rejected | research + 4 benchmark views |
+
+### Open questions
+1. Surface the negative result in the public report.html / README? (real
+   finding: "a deliberation blend didn't beat baseline on bias.")
+2. The broader "series of meditation instructions" ambition is still open, but
+   this thread argues for restraint: SATORI is near the competence frontier of
+   what a loadable file adds on these tasks.
+
+---
+
+## ENTRY 2026-06-22i — Calibrated red-team meditation: 3-cluster research
+
+### Session goal
+User wants a NEW meditation file (SATORI-style) for the agent to DO adversarial
+review — but calibrated down from an earlier red-team attempt that was "too
+aggressive": it tunnel-visioned onto the named attacks and lost the whole-system
+picture. User's prior framing (2026-06-04b): fix WHOLE-SYSTEM -> modular ->
+granular at a "medium average" altitude.
+
+### What we ran
+3 background web-research agents (sonnet): (A) red-team calibration / purple-
+team / proportionality; (B) critique cognitive techniques (premortem, devil's
+advocate, steelman, consider-the-opposite); (C) AI-critique calibration +
+proportional threat modeling. ~160k subagent tokens total.
+
+### What returned — the reframe + convergent mechanisms
+**REFRAME (important, pushes back on the premise):** the dominant real failure
+is UNDER-flagging via context-suppression, not over-flagging. Cluster C's
+highest-evidence finding (arXiv 2603.18740, p<0.001): framing code as "already
+reviewed / bug-free" suppressed an LLM's real-bug detection 16-93%. So "too
+aggressive" almost certainly meant findings were real but UNSCOPED, UNGROUNDED,
+UNRANKED, and tunnel-visioned — which READS as noise. Fix = output discipline +
+whole-system bookends, NOT lower sensitivity. Counter-calibration: keep/ELEVATE
+aggression on auth/crypto/payments/privilege/trust boundaries (under-flagging
+there is catastrophic).
+
+Convergent, evidence-ranked mechanisms (all 3 clusters agree):
+- Whole-system scope survey FIRST (categories + goals + realistic threat model)
+  before any attack — the core anti-tunnel gate (A: PASTA/ISACA business-first;
+  B: scope survey; C: scope declaration).
+- Steelman the ACTUAL design before critiquing (anti-negativity / motivated
+  skepticism) — Rapoport/Dennett; anchor to the real design (Gelman caveat).
+- Blind the framing — ignore prior verdicts / "approved" labels (anti-
+  suppression; C, highest evidence).
+- Premortem: "it already failed badly, 5 reasons across >=3 categories," no
+  pre-named threat, generate before ranking (A+B; Klein/Mitchell89 — 30% is
+  QUANTITY not quality).
+- Consider-the-opposite 2nd pass: "assume my critique was biased" (B; d~0.3-0.5).
+- Per-finding gate: grounded trigger (position+steps+observable, else
+  "hypothesis"), which stated GOAL it violates, severity x likelihood (H/M/L not
+  DREAD 1-10), blast-radius, + a concrete fix or accept/defer rationale.
+- Rank & bound + severity routing (Block/Sprint/Backlog/Hypothesis); abstain
+  gate (localized/reproducible/actionable?).
+- Whole-system reintegration + forced verdict (sound / needs-changes / unsound)
+  for convergence (B; ACH rejected as overkill).
+Overkill (NOT steps): full DREAD 1-10, MITRE/PASTA full matrix, ACH, multi-LLM
+ensemble, formal RoE, purple-team loop (needs a blue team), Fagan checklist.
+
+### Synthesis (proposed design — PENDING user approval, not written)
+A 7-move SATORI-style "red-team meditation": Pause-before-execute -> (1) reflex +
+whole-system frame -> (2) steelman -> (3) blind the framing -> (4) premortem
+across categories -> (5) turn on yourself (consider-the-opposite) -> (6) ground +
+gate + rank each finding, proportional, with the security-elevation exception ->
+(7) whole-system reintegration + one verdict + pause. Anti-tunnel via 1/2/5/6/7;
+anti-blindness via 3 + the scope-aware exception. General across plans/designs/
+systems/code, with a security elevation hook. Naming TBD by user (BREATH/INSIGHT/
+SATORI locked). Open: benchmark it (red-team a real artifact with/without) before
+adoption, like COMPASS.
+
+### Decisions made
+| Decision | Status | Why |
+|----------|--------|-----|
+| "Scale back" = output discipline + whole-system bookends, not less detection | proposed | evidence: under-flagging is the bigger real risk |
+| Keep/elevate aggression on security-critical paths | proposed | under-flagging there is catastrophic (asymmetric) |
+| New sibling file, not edits to SATORI | proposed | distinct task (adversarial review) |
+| Write the file now | ❌ pending | pause-before-execute; needs user sign-off + name |
+
+### Open questions
+1. Name? 2. Scope: general vs code-review-only? 3. Benchmark before adopting?
+
+---
+
+## ENTRY 2026-06-22j — CRUCIBLE drafted + benchmarked (PASSED)
+
+### Session goal
+From entry i: user approved the calibrated red-team meditation, named it
+**CRUCIBLE**, chose general+security-hook scope, and said "draft and benchmark."
+
+### What we ran
+Drafted `/CRUCIBLE.md` (7-move calibrated adversarial-review discipline: triage →
+reflex+whole-system frame → steelman → blind-the-framing → premortem-across-
+categories → turn-on-yourself → ground/gate/rank with security-elevation → verdict).
+Benchmark: BASELINE ("be thorough/adversarial, find everything") vs CRUCIBLE, on
+one planted artifact (`benchmarks/v6_crucible/artifact_password_reset.md` —
+md5(email+date) token, logged reset URL, shared-queue flood, lifetime rate-limit
+counter, + nits + "approved" suppression banner + OAuth-rewrite bait). 2×2 runs
+(Sonnet), blind dual judges (Sonnet+Opus), rubric /25. Record: SCORING.md +
+results/.
+
+### What returned
+**CRUCIBLE 22.75 vs BASELINE 17.0 (+5.75/25). Clean separation — both judges
+ranked both CRUCIBLE runs above both baseline runs.** Both judges independently:
+the difference is CALIBRATION, not recall (all four caught the real bugs;
+CRUCIBLE tiered + dropped nits + resisted traps; baseline produced 17–20-item
+flat walls with speculative CSRF/HTTPS inflated to HIGH — "textbook over-
+flagger," Opus). This IS the over-aggression failure the file targets, fixed.
+
+### Synthesis
+First ANAPANA addition to PASS its benchmark (vs the deliberation blend, which
+was rejected). The win is real because the baseline genuinely over-flags and
+CRUCIBLE's structure (whole-system bookends + steelman + ground/rank/bound)
+disciplines it. One refinement indicated: CRUCIBLE_t1 demoted the whole-system
+shared-queue finding to "hypothesis" (Opus docked Whole-system); t2 handled it
+right under the same file (within-arm variance). Optional nudge: step-6 grounding
+gate shouldn't demote a mechanism-clear adjacent-system finding to "hypothesis"
+for lack of load numbers — tag "confirm at scale" instead.
+
+### Decisions made
+| Decision | Status | Why |
+|----------|--------|-----|
+| Adopt CRUCIBLE into the series | proposed (pending user) | passed blind benchmark, clean separation, fixes the over-aggression failure |
+| Optional step-6 whole-system nudge | proposed (pending user) | benchmark showed one run hedged a real adjacent-system finding |
+| Placement (root vs variants/) + README/report update | pending user | outward-facing |
+
+### Open questions
+1. Apply the step-6 refinement? 2. CRUCIBLE at root or variants/? 3. Add to
+README files-table + report.html? 4. Benchmark on a non-security artifact too?
+
+---
+
 ## Template for future entries
 
 Copy-paste this block when starting a new entry. Fill in the sections.
