@@ -150,6 +150,19 @@ xychart-beta
 
 > **The win was calibration, not recall.** Both judges ranked *both* CRUCIBLE runs above *both* baseline runs (**+5.75/25**). All four runs *found* the same real bugs — they separated on how findings were **scoped, ranked, and presented**: CRUCIBLE tiered them and kept the critical bug as the clear blocker; the baseline produced 17–20-item near-flat walls with speculative items inflated to HIGH ("textbook over-flagger," per a judge). That noise — not missed bugs — is what makes red-team passes feel *"too aggressive."* Details: [`benchmarks/v6_crucible/SCORING.md`](benchmarks/v6_crucible/SCORING.md).
 
+**CRUCIBLE across the model field** — same file, 8 hosts red-teaming the same artifact, one blind dual-judge pool, scored on *calibration* /25:
+
+```mermaid
+%%{init: {'theme':'base'}}%%
+xychart-beta
+    title "CRUCIBLE calibration by host — blind-judged /25 (N=1)"
+    x-axis ["Opus 4.8", "GPT-5.4", "GPT-5.5", "Kimi", "Sonnet 4.6", "DeepSeek", "GPT-5.4-mini", "Haiku 4.5"]
+    y-axis "Score (max 25)" 0 --> 25
+    bar [25.0, 24.5, 23.5, 23.5, 23.0, 20.0, 20.0, 17.5]
+```
+
+> Unlike open-design (where the Claude frontier dominates), **calibrated review travels across model families** — Opus 4.8 tops it but **GPT-5.4 is a near-co-leader (24.5)**, and GPT-5.5/Kimi edge Sonnet. The outlier is **Haiku 4.5, last (17.5)** — the only model to take the scope-creep/rewrite bait and over-flag. Every model still reached the right verdict; the spread is in *staying calibrated.* Data: [`benchmarks/v8_crucible_models/SCORING.md`](benchmarks/v8_crucible_models/SCORING.md).
+
 ### 3. What we tested and *rejected* (a negative result)
 
 We tried to make SATORI fight bias harder by adding a research-backed "deliberation loop" (step-back, counterfactual probe, isolated re-derivation, compare-and-converge) and benchmarked it **blind before adopting**. It didn't earn its place: **0 bias-resistance gain across four views** — catchable bias, subtle bias (Simpson's-paradox data, a correct function with a wrong test), and a weak model. Baseline SATORI already resists these biases; its frame check + reflex-capture + reproduce-gate were doing the work. We kept the file unchanged. Details: [`benchmarks/v5_subtle/RESULTS.md`](benchmarks/v5_subtle/RESULTS.md) · [`synthesis/research_cot_debias.md`](synthesis/research_cot_debias.md).
