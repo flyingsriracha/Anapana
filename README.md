@@ -108,6 +108,19 @@ xychart-beta
 
 **The headline finding:** the practice is the *floor-raiser*; the model is the *ceiling-setter*. On the code task — a bug report pushing hard toward an expensive rewrite — **8/8 runs resisted the trap, even Haiku**. The frame check works on every model. On open-ended design, model capability dominates and the spread is 10 points. **Routing:** bounded code → Sonnet 4.6 (the value pick); open-ended / critical design → Fable 5 or Opus 4.8.
 
+**Expanded field** — same SATORI file across **9 models** on the open-design task (the 4 Claude models + five via Azure Foundry: GPT-5.5, GPT-5.4, GPT-5.4-mini, DeepSeek, Kimi), one fresh blind dual-judge pool:
+
+```mermaid
+%%{init: {'theme':'base'}}%%
+xychart-beta
+    title "Expanded field — open-design, blind-judged /20 (N=1, directional)"
+    x-axis ["Fable 5", "Opus 4.8", "Sonnet 4.6", "GPT-5.5", "GPT-5.4", "Haiku 4.5", "DeepSeek", "GPT-5.4-mini"]
+    y-axis "Score (max 20)" 0 --> 20
+    bar [19.5, 18.0, 18.0, 16.0, 15.5, 15.0, 12.5, 12.5]
+```
+
+> 🏆 **Fable 5 still tops the field (19.5).** The Claude frontier (Fable / Opus / Sonnet) leads; **GPT-5.5 is the strongest non-Claude host (16.0)**, ahead of Haiku 4.5. *Caveats: N=1, one task, a fresh pool (not comparable to the 4-model numbers above); Kimi's run was truncated and is excluded pending a re-run. Full data: [`benchmarks/v7_models/SCORING.md`](benchmarks/v7_models/SCORING.md).*
+
 ### 2. CRUCIBLE — the red-team practice 🔥
 
 SATORI is for *building*. **CRUCIBLE** is its sibling for *critiquing* — a discipline an agent loads before adversarially reviewing a plan, design, or change. It was built to fix a specific failure: red teams that **tunnel-vision onto the named attack, flood low-value nitpicks, and lose the whole-system view** (and the opposite failure — going soft because something looks "already approved").

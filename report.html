@@ -802,6 +802,67 @@
 </section>
 
 <section>
+  <h2>Expanded model field — 9 hosts on the open-design task</h2>
+  <p class="muted" style="margin-bottom:14px;">June 2026: the same <code>SATORI.md</code> run across <strong>nine models</strong> on the open-design task (R-SCOPE) in one fresh blind dual-judge pool — the four Claude models plus five via Azure AI Foundry (<strong>GPT-5.5, GPT-5.4, GPT-5.4-mini, DeepSeek, Kimi</strong>). N=1, directional. Full record: <code>benchmarks/v7_models/SCORING.md</code>.</p>
+  <div style="overflow-x:auto;">
+  <table style="width:100%; border-collapse:collapse; font-size:13.5px; line-height:1.5;">
+    <thead>
+      <tr style="text-align:left; border-bottom:2px solid var(--border);">
+        <th style="padding:10px 12px;">Model</th>
+        <th style="padding:10px 12px;">Family</th>
+        <th style="padding:10px 12px; min-width:200px;">Open-design score /20</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--border); background:color-mix(in oklab, var(--v3lite) 8%, transparent);">
+        <td style="padding:10px 12px;"><strong>Fable 5</strong> <span style="font-size:10px; background:var(--v3lite); color:var(--inv-text); padding:1px 6px; border-radius:4px; font-weight:700;">BEST</span></td>
+        <td style="padding:10px 12px;">Claude</td>
+        <td style="padding:10px 12px;"><strong>19.5</strong><div style="height:6px; background:var(--border); border-radius:3px; margin-top:4px;"><div style="height:6px; width:97.5%; background:var(--v3lite); border-radius:3px;"></div></div></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;"><strong>Opus 4.8</strong></td><td style="padding:10px 12px;">Claude</td>
+        <td style="padding:10px 12px;">18.0<div style="height:6px; background:var(--border); border-radius:3px; margin-top:4px;"><div style="height:6px; width:90%; background:var(--v3); border-radius:3px;"></div></div></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;"><strong>Sonnet 4.6</strong></td><td style="padding:10px 12px;">Claude</td>
+        <td style="padding:10px 12px;">18.0<div style="height:6px; background:var(--border); border-radius:3px; margin-top:4px;"><div style="height:6px; width:90%; background:var(--v3); border-radius:3px;"></div></div></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border); background:color-mix(in oklab, var(--v1) 8%, transparent);">
+        <td style="padding:10px 12px;"><strong>GPT-5.5</strong> <span style="font-size:10px; background:var(--v1); color:var(--inv-text); padding:1px 6px; border-radius:4px; font-weight:700;">TOP NON-CLAUDE</span></td>
+        <td style="padding:10px 12px;">Foundry</td>
+        <td style="padding:10px 12px;">16.0<div style="height:6px; background:var(--border); border-radius:3px; margin-top:4px;"><div style="height:6px; width:80%; background:var(--v1); border-radius:3px;"></div></div></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;">GPT-5.4</td><td style="padding:10px 12px;">Foundry</td>
+        <td style="padding:10px 12px;">15.5<div style="height:6px; background:var(--border); border-radius:3px; margin-top:4px;"><div style="height:6px; width:77.5%; background:var(--v1); border-radius:3px;"></div></div></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;">Haiku 4.5</td><td style="padding:10px 12px;">Claude</td>
+        <td style="padding:10px 12px;">15.0<div style="height:6px; background:var(--border); border-radius:3px; margin-top:4px;"><div style="height:6px; width:75%; background:var(--v3); border-radius:3px;"></div></div></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;">DeepSeek</td><td style="padding:10px 12px;">Foundry</td>
+        <td style="padding:10px 12px;">12.5<div style="height:6px; background:var(--border); border-radius:3px; margin-top:4px;"><div style="height:6px; width:62.5%; background:var(--v1); border-radius:3px;"></div></div></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;">GPT-5.4-mini</td><td style="padding:10px 12px;">Foundry</td>
+        <td style="padding:10px 12px;">12.5<div style="height:6px; background:var(--border); border-radius:3px; margin-top:4px;"><div style="height:6px; width:62.5%; background:var(--v1); border-radius:3px;"></div></div></td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border); opacity:0.6;">
+        <td style="padding:10px 12px;">Kimi <span style="font-size:10px; color:var(--warn);">truncated</span></td><td style="padding:10px 12px;">Foundry</td>
+        <td style="padding:10px 12px;">— <span class="muted" style="font-size:11px;">output hit the token cap mid-design; excluded pending re-run</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="finding-card" style="margin-top:16px;">
+    <h4>Fable 5 still tops the field; GPT-5.5 leads the non-Claude hosts</h4>
+    <p>Across nine hosts on the same open-design task, the <strong>Claude frontier (Fable 5 · Opus 4.8 · Sonnet 4.6) leads</strong>, and <strong>GPT-5.5 is the strongest non-Claude SATORI host (16.0)</strong> — ahead of Haiku 4.5, behind the Claude frontier. Every model produced a usable SATORI-structured design; the spread is in scope and judgment, exactly where the controlled round said model capability dominates on open-ended work. GPT-5.5 is a reasoning model and needed a large output budget to answer at all.</p>
+  </div>
+  <p class="muted" style="font-size:12.5px;">Caveats: <strong>N=1, one task</strong> — directional (the 4-model round above is the more rigorous N=2, dual-task result). Fresh pool, NOT comparable to those numbers. Fable 5 was unavailable live, so its round-3 R-SCOPE output was reused (it won that round fresh too). Kimi's run truncated at the token cap and is excluded. Contestant judges (blind-anonymized, spread-scored, dual); both ranked Fable 5 first.</p>
+</section>
+
+<section>
   <h2>What we tested and rejected — a deliberation "blend"</h2>
   <p class="muted" style="margin-bottom:14px;">June 2026: research on chain-of-thought shows that "thinking longer" doesn't remove bias — extended reasoning tends to <em>rationalize</em> a pre-committed answer, and on leading/distractor framing it makes things worse (see Anthropic, <em>Inverse Scaling in Test-Time Compute</em>). The evidence-backed levers are <strong>diversity, isolation, and convergence</strong>, not duration. So we built a candidate that adds those moves on top of SATORI — <strong>step-back abstraction, a counterfactual probe, treating memory as a stale anchor, isolated re-derivation, and a compare-&amp;-converge loop</strong> — and benchmarked it <strong>blind against baseline SATORI before adopting anything</strong>. Full record: <code>benchmarks/v4_deliberation/</code> and <code>benchmarks/v5_subtle/</code>, research_log 2026-06-21f…22h.</p>
   <div style="overflow-x:auto;">
