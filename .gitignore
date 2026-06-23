@@ -5,6 +5,12 @@ practice/
 product/
 test_repos/
 
+# Secrets / local env — NEVER commit
+.env
+.env.*
+*.env
+*.key
+
 # OS / editor cruft
 .DS_Store
 __pycache__/

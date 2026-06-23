@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 340" width="1280" height="340" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f1419"/>
+      <stop offset="1" stop-color="#1b2330"/>
+    </linearGradient>
+    <linearGradient id="enso" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff6b9d"/>
+      <stop offset="1" stop-color="#c084fc"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1280" height="340" rx="20" fill="url(#bg)"/>
+  <rect x="1.5" y="1.5" width="1277" height="337" rx="19" fill="none" stroke="#2a3340" stroke-width="2"/>
+
+  <!-- ensō (zen circle) motif -->
+  <g transform="translate(1075 170)" opacity="0.9">
+    <path d="M 92 -55 A 110 110 0 1 0 110 35"
+          fill="none" stroke="url(#enso)" stroke-width="16" stroke-linecap="round"/>
+  </g>
+  <circle cx="1075" cy="170" r="6" fill="#fbbf24"/>
+
+  <!-- brandmark -->
+  <text x="72" y="74" fill="#ff6b9d" font-size="15" font-weight="700" letter-spacing="4">ANAPANA · A PRE-COMMIT DISCIPLINE FOR AI AGENTS</text>
+
+  <!-- title -->
+  <text x="68" y="180" fill="#e8eef5" font-size="104" font-weight="800" letter-spacing="-3">SATORI<tspan fill="#ff6b9d">.</tspan></text>
+
+  <!-- tagline -->
+  <text x="72" y="226" fill="#cdd6e3" font-size="27" font-weight="400">Pause · reframe · reproduce — then act.</text>
+  <text x="72" y="262" fill="#8a99ad" font-size="19">The moves a strong model doesn't make on its own — measured, not asserted.</text>
+
+  <!-- practice pills -->
+  <g font-size="17" font-weight="700">
+    <rect x="72" y="284" width="232" height="34" rx="17" fill="#161c24" stroke="#ff6b9d" stroke-width="1.5"/>
+    <text x="92" y="306" fill="#ff6b9d">SATORI</text>
+    <text x="160" y="306" fill="#8a99ad" font-weight="400">— build / think</text>
+
+    <rect x="320" y="284" width="262" height="34" rx="17" fill="#161c24" stroke="#50c878" stroke-width="1.5"/>
+    <text x="340" y="306" fill="#50c878">CRUCIBLE</text>
+    <text x="420" y="306" fill="#8a99ad" font-weight="400">— red-team / critique</text>
+  </g>
+</svg>

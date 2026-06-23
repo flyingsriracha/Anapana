@@ -1,10 +1,32 @@
-# SATORI
+<!-- hero -->
+![SATORI — a pre-commit discipline for AI agents](assets/satori-hero.svg)
 
-**A pre-commit reflection discipline for AI agents.** Pause. Reframe. Reproduce. Then act.
+![practices](https://img.shields.io/badge/practices-SATORI_%2B_CRUCIBLE-ff6b9d?style=flat-square)
+![best host](https://img.shields.io/badge/best_host-Fable_5_19.5%2F20-fbbf24?style=flat-square)
+![crucible](https://img.shields.io/badge/CRUCIBLE-%2B5.75%2F25_vs_baseline-50c878?style=flat-square)
+![evidence](https://img.shields.io/badge/evidence-blind_dual--judge-4a90e2?style=flat-square)
+![works with](https://img.shields.io/badge/works_with-any_LLM-8a99ad?style=flat-square)
 
-SATORI is a small markdown file you give an AI coding agent **before** it acts. It makes the agent stop, question whether it's even solving the right problem, verify against reality, and hand the decision back to you — instead of confidently charging down the wrong path.
+**A pre-commit reflection discipline for AI agents.** Small markdown files you give an agent **before** it acts — so it stops, questions whether it's solving the *right* problem, verifies against reality, and hands the decision back to you, instead of confidently charging down the wrong path.
 
-> **Start here:** [`SATORI.md`](SATORI.md) → paste it as a system prompt or a per-task prefix to your agent. That's it.
+This repo ships **two** practices, both benchmark-backed:
+
+| | For | One line |
+|---|---|---|
+| 🧭 **[`SATORI.md`](SATORI.md)** | **Building** | Pause before you commit to a direction. Notice the pull, don't obey it. |
+| 🔥 **[`CRUCIBLE.md`](CRUCIBLE.md)** | **Red-teaming** | Critique a plan/design/code adversarially — without tunnel-visioning on attacks or drowning the signal. |
+
+> **Start here:** paste [`SATORI.md`](SATORI.md) into your agent as a system prompt or per-task prefix. That's it. Reviewing someone's design? Use [`CRUCIBLE.md`](CRUCIBLE.md) instead.
+
+### At a glance
+
+| | | |
+|---|---|---|
+| **Caught in production** | `$0 fix` | a fix that would've passed its tests and saved nothing |
+| **Best SATORI host** | `Fable 5 · 19.5/20` | blind-judged, 4-model field |
+| **CRUCIBLE vs baseline** | `+5.75/25` | calibrated red-team beats "just be thorough" |
+| **Its new claims** | `4/4 verified` | spec corrections confirmed against code |
+| **Measured over** | `29 trials` | 3 benchmarks + bake-offs + 4-model head-to-head |
 
 ---
 
@@ -14,13 +36,11 @@ AI agents lock onto the first plausible framing. You point them at `dashboard.py
 
 The expensive failure isn't the small wrong fix. It's the **tunnel-vision spiral**: an agent burns a fortune in tokens very competently solving something that was never the point, you read the diff, realize the framing is wrong, and you have to wrangle it back and **restart**. The wasted run is sunk; the wrong direction often leaks into your codebase as half-done work you now have to undo.
 
-**The honest cost picture:** SATORI does *not* save tokens on a single run — it costs a little more on a single run, because the agent stops to think before acting. **Over a long project, it saves you the cost of the wrong-direction PRs, the broken deploys, the half-done refactors that need to be torn out, and the restart of every spiral that didn't have a brake on it.** It's the cost of a seatbelt vs. the cost of an accident. We measured this directly: in a head-to-head with no practice file, on a bug report that pushed hard toward a microservices rewrite, the agent with SATORI declined the rewrite, found the small N+1, and shipped a 3-line fix. The agent without it burned tokens enthusiastically refining the wrong answer.
-
-The goal isn't to slow the agent down on every task — it's to **slow it down on the right ones**, by an amount that pays back many times over in avoided rework.
+**The honest cost picture:** SATORI does *not* save tokens on a single run — it costs a little more, because the agent stops to think first. **Over a long project it saves the wrong-direction PRs, the broken deploys, the half-done refactors torn out later, and the restart of every spiral that had no brake.** It's a seatbelt, not a speedup. The goal isn't to slow the agent on every task — it's to **slow it on the right ones**, by an amount that pays back many times over in avoided rework.
 
 ---
 
-## What it actually does — five mechanisms
+## What SATORI does — five mechanisms
 
 SATORI isn't "think step by step." It's the specific moves a strong model does **not** make on its own:
 
@@ -48,13 +68,25 @@ flowchart LR
 
 ---
 
+## Shown, not told — three production cases
+
+The most convincing evidence isn't a benchmark — it's what the practice caught on real systems. These are real engineering engagements *(anonymized)*. What makes them fair: **each had already been through a thorough pass** — sub-agents, verification, a written plan — *before* the practice ran. Full writeups are in [`report.html`](report.html).
+
+| Real engagement | A thorough pass already produced | What the practice changed | Result |
+|---|---|---|---|
+| A **43-finding fix campaign** on a production agent | "all 43 verified — here's the phased plan" | re-asked *"are these fixes correct?"* → the headline fix would pass its tests, ship green, and save **$0** (a 20-hour freshness window a 24-hour job can never meet) | 4 broken fixes + unlisted bugs caught before merge; **4/4** new claims verified vs code |
+| A nightly service **OOM-killed ~47 nights** running | a bundle of **4 co-equal fixes**, incl. a risky day-one change | isolated the **one-line keystone**; deferred the risky change behind an evidence gate | **4 → 1**: a 47-night crash fixed by one argument |
+| *"Order the news on this screen better"* | a one-screen tweak (an earlier bolt-on had made it worse) | reframed: ~8 code paths feed **62%-stub, near-duplicate** data to expensive LLMs | **1 → 8**: a scalpel became the systemic fix it actually needed |
+
+> Is it just a longer document? The practitioners held it to three falsifiable tests: **did it change decisions** (not just prose), **do its new claims survive verification**, and **did it produce disconfirmations**. All three, yes — details in the report.
+
+---
+
 ## The evidence
 
-Two pieces of data on the front page; the full report (29-trial benchmark + bake-offs) is in [`report.html`](report.html).
+### 1. SATORI across models — Fable 5 leads the field 🏆
 
-### 1. Quality across models (SATORI, blind-judged, June 2026)
-
-Same SATORI file, four models, two tasks (one code, one open-ended design), two trials each, scored blind by two independent judges:
+Same SATORI file, four models, two tasks (one code, one open-ended design), two trials each, scored **blind by two independent judges**:
 
 ```mermaid
 %%{init: {'theme':'base'}}%%
@@ -65,90 +97,82 @@ xychart-beta
     bar [19.5, 19.0, 16.5, 12.9]
 ```
 
-| Model | Code-diagnosis task | Open-design task | Overall |
+| Model | Code-diagnosis | Open-design | Overall |
 |---|---:|---:|---:|
-| **Fable 5** | 19.25 | **19.75** | **19.5** |
+| 🏆 **Fable 5** | 19.25 | **19.75** | **19.5** |
 | Opus 4.8 | 19.5 | 18.5 | 19.0 |
 | Sonnet 4.6 | 19.0 | 14.0 | 16.5 |
 | Haiku 4.5 | 16.0 | 9.75 | 12.9 |
 
-**The headline finding:** the practice is the *floor-raiser*; the model is the *ceiling-setter*. On the code-diagnosis task — a bug report pushing hard toward an expensive rewrite — **8/8 runs resisted the trap, even Haiku**. The frame check works on every model; the wrong-direction restart was prevented across the board. On open-ended design, where there's no ground truth to converge on, model capability dominates and the spread is 10 points.
+> **🏆 Fable 5 is the strongest SATORI host (19.5/20)** — edging Opus 4.8, and its lead concentrates exactly where model capability matters most: **open-ended design (19.75)**, where there's no ground truth to converge on. Judges called its work *"the single most complete, precise, and practically useful answer"* and *"senior design judgment."*
 
-**Routing guide:** bounded code work → Sonnet 4.6 is the value pick. Open-ended or critical design → Fable 5 or Opus 4.8. SATORI is the floor; the model sets the ceiling.
+**The headline finding:** the practice is the *floor-raiser*; the model is the *ceiling-setter*. On the code task — a bug report pushing hard toward an expensive rewrite — **8/8 runs resisted the trap, even Haiku**. The frame check works on every model. On open-ended design, model capability dominates and the spread is 10 points. **Routing:** bounded code → Sonnet 4.6 (the value pick); open-ended / critical design → Fable 5 or Opus 4.8.
 
-### 2. The five mechanisms, ordered by what differentiates them
+### 2. CRUCIBLE — the red-team practice 🔥
+
+SATORI is for *building*. **CRUCIBLE** is its sibling for *critiquing* — a discipline an agent loads before adversarially reviewing a plan, design, or change. It was built to fix a specific failure: red teams that **tunnel-vision onto the named attack, flood low-value nitpicks, and lose the whole-system view** (and the opposite failure — going soft because something looks "already approved").
 
 ```mermaid
-flowchart TD
-    classDef common fill:#e2e8f0,stroke:#94a3b8,color:#0f172a
-    classDef strong fill:#bfdbfe,stroke:#3b82f6,color:#0f172a
-    classDef unique fill:#fde68a,stroke:#f59e0b,color:#0f172a
-
-    M1[Frame check<br/><i>Is this the right problem?</i>]:::unique
-    M2[Reflex-capture<br/><i>Gut answer first, audit after</i>]:::unique
-    M3[Pause-before-execute<br/><i>Human is the gatekeeper</i>]:::strong
-    M4[Reproduce-gate<br/><i>Run code, don't simulate</i>]:::strong
-    M5[Triage / tiered depth<br/><i>Match effort to stakes</i>]:::common
-
-    M1 --> note1[Not covered by any<br/>academic technique<br/>Reflexion/CoVe/Self-Refine<br/>all assume the task is correct]
-    M2 --> note2[No prior framework<br/>operationalizes this<br/>for agents]
-    M3 --> note3[Same instinct as<br/>Cursor/Windsurf plan-modes<br/>and HumanLayer SDK]
-    M4 --> note4[Same instinct as<br/>SWE-bench fail-to-pass]
-    M5 --> note5[Same instinct as<br/>any sensible<br/>operations runbook]
-
-    style note1 fill:none,stroke:none,color:#475569,font-size:11px
-    style note2 fill:none,stroke:none,color:#475569,font-size:11px
-    style note3 fill:none,stroke:none,color:#475569,font-size:11px
-    style note4 fill:none,stroke:none,color:#475569,font-size:11px
-    style note5 fill:none,stroke:none,color:#475569,font-size:11px
+flowchart LR
+    A([Artifact to review]) --> B[1.Whole-system frame<br/>goals · failure categories · scope]
+    B --> C[2.Steelman<br/>strongest case FOR it, first]
+    C --> D[3.Blind the framing<br/>ignore 'already approved']
+    D --> E[4.Premortem<br/>it failed — 5 reasons, 3+ categories]
+    E --> F[5.Turn on yourself<br/>what did I over/under-weight?]
+    F --> G[6.Ground · rank · bound<br/>Block / Sprint / Backlog / Hypothesis]
+    G --> H[7.Verdict<br/>sound / needs-changes / unsound]
+    H --> P([Pause for human])
 ```
 
-Yellow = genuinely underserved by prior art (the front-of-the-pack contribution). Blue = existing instincts SATORI packages into one loadable file. Grey = sensible-and-shared with most engineering practice. Full prior-art analysis: [`synthesis/prior_art.md`](synthesis/prior_art.md).
+In a blind dual-judge benchmark, CRUCIBLE beat an uncalibrated *"be thorough and adversarial, find everything"* red-team:
 
-### 3. What we tested and rejected (a negative result)
+```mermaid
+%%{init: {'theme':'base'}}%%
+xychart-beta
+    title "Calibration — blind-judged, /25 (higher = better)"
+    x-axis ["CRUCIBLE", "Baseline red-team"]
+    y-axis "Score (max 25)" 0 --> 25
+    bar [22.75, 17.0]
+```
 
-We tried to make SATORI fight bias harder by adding a research-backed "deliberation loop" (step-back, counterfactual probe, isolated re-derivation, compare-and-converge) and benchmarked it **blind against baseline SATORI before adopting**. It didn't earn its place: **0 bias-resistance gain across four views** — catchable bias, subtle bias (Simpson's-paradox data, a correct function with a wrong test), and even a weak model (Haiku). Baseline SATORI already resists these biases; its frame check + reflex-capture + reproduce-gate were doing the work. We kept the file unchanged. Details: [`benchmarks/v5_subtle/RESULTS.md`](benchmarks/v5_subtle/RESULTS.md) and [`synthesis/research_cot_debias.md`](synthesis/research_cot_debias.md).
+> **The win was calibration, not recall.** Both judges ranked *both* CRUCIBLE runs above *both* baseline runs (**+5.75/25**). All four runs *found* the same real bugs — they separated on how findings were **scoped, ranked, and presented**: CRUCIBLE tiered them and kept the critical bug as the clear blocker; the baseline produced 17–20-item near-flat walls with speculative items inflated to HIGH ("textbook over-flagger," per a judge). That noise — not missed bugs — is what makes red-team passes feel *"too aggressive."* Details: [`benchmarks/v6_crucible/SCORING.md`](benchmarks/v6_crucible/SCORING.md).
+
+### 3. What we tested and *rejected* (a negative result)
+
+We tried to make SATORI fight bias harder by adding a research-backed "deliberation loop" (step-back, counterfactual probe, isolated re-derivation, compare-and-converge) and benchmarked it **blind before adopting**. It didn't earn its place: **0 bias-resistance gain across four views** — catchable bias, subtle bias (Simpson's-paradox data, a correct function with a wrong test), and a weak model. Baseline SATORI already resists these biases; its frame check + reflex-capture + reproduce-gate were doing the work. We kept the file unchanged. Details: [`benchmarks/v5_subtle/RESULTS.md`](benchmarks/v5_subtle/RESULTS.md) · [`synthesis/research_cot_debias.md`](synthesis/research_cot_debias.md).
 
 ---
 
-## Files
+## Files & routing
 
 ```
 .
-├── README.md              ← you are here
-├── SATORI.md              ← the practice — paste into your agent's system prompt
-├── CRUCIBLE.md            ← sibling practice for ADVERSARIAL REVIEW (red-team a plan/design/code)
-├── report.html            ← interactive evidence report (open in any browser)
-├── variants/              ← lighter / heavier alternatives
-│   ├── BREATH.md          ← 8-step pause, the foundation. Lightest.
-│   ├── INSIGHT.md         ← BREATH + frame check. The first reframing-capable file.
-│   └── SATORI_FULL.md     ← Heaviest: every step every time, includes variance ("run twice")
-├── benchmarks/            ← replication kit (problems, prompts, results data)
-└── synthesis/             ← analysis docs, research log, prior-art comparison
+├── SATORI.md      ← the practice (build) — paste into your agent's system prompt
+├── CRUCIBLE.md    ← the red-team practice (critique) — adversarial review
+├── report.html    ← interactive evidence report (open in any browser)
+├── variants/      ← BREATH (lightest) · INSIGHT (+ frame check) · SATORI_FULL (heaviest)
+├── benchmarks/    ← replication kit (problems, prompts, results, scoring)
+└── synthesis/     ← analysis docs, research log, prior-art comparison
 ```
-
-**Quick routing among the files:**
 
 | Situation | Use |
 |---|---|
 | **Default for any non-trivial agent task** | **`SATORI.md`** |
 | **Adversarially reviewing / red-teaming a plan, design, or change** | **`CRUCIBLE.md`** |
-| Lighter foundation if SATORI feels heavy for the task | `variants/BREATH.md` or `variants/INSIGHT.md` |
+| Lighter foundation if SATORI feels heavy | `variants/BREATH.md` or `variants/INSIGHT.md` |
 | Cross-cutting design where you want every step every time | `variants/SATORI_FULL.md` |
 | Simple typo / lint / one-line fix | None — let the agent do the work |
-
-> **SATORI vs CRUCIBLE:** SATORI is for *building* — pause before you commit to a direction. **CRUCIBLE is the red-team practice** — review a plan/design/code adversarially, without tunnel-visioning on attacks or drowning the signal. CRUCIBLE beat an uncalibrated "be thorough and adversarial" red-team by **+5.75/25** in a blind dual-judge benchmark, separating on *calibration* (it tiered findings, dropped nits, and resisted "it's already approved" + scope-creep bait), not on what it caught. Details: [`benchmarks/v6_crucible/SCORING.md`](benchmarks/v6_crucible/SCORING.md).
 
 ---
 
 ## Quick start
 
-1. Open [`SATORI.md`](SATORI.md), copy its contents.
-2. Paste into your agent as a **system prompt** (recommended) or as a **per-message prefix** before the actual task.
-3. The agent will produce analysis as text and **stop** before executing. Read its proposed reflex-vs-meditated delta. Approve or redirect.
-4. If you want the agent to skip the pause for a turn (e.g., *"I trust this, go ahead and apply it"*), say so explicitly in that turn.
+1. Open [`SATORI.md`](SATORI.md) (or [`CRUCIBLE.md`](CRUCIBLE.md) for review work), copy its contents.
+2. Paste into your agent as a **system prompt** (recommended) or a **per-message prefix**.
+3. The agent produces analysis as text and **stops** before executing. Read its reflex-vs-result delta (SATORI) or its ranked verdict (CRUCIBLE). Approve or redirect.
+4. To skip the pause for a turn, say so explicitly (e.g. *"I trust this, go ahead and apply it"*).
 
-Works with Claude / GPT / Gemini / open models. The pause-before-execute is a prompt-level contract — in deployments that auto-approve tool calls (Claude Code with auto-approve enabled, unattended agent pipelines), the pause is decorative. Run interactively or configure explicit per-tool approval before relying on SATORI for stake-bearing work.
+Works with Claude / GPT / Gemini / open models. Pause-before-execute is a prompt-level contract — in deployments that auto-approve tool calls it's decorative, so run interactively (or configure per-tool approval) for stake-bearing work.
 
 ---
 
@@ -156,13 +180,13 @@ Works with Claude / GPT / Gemini / open models. The pause-before-execute is a pr
 
 We checked ([`synthesis/prior_art.md`](synthesis/prior_art.md)):
 
-- **Already well-covered, lean on these:** human-in-the-loop infrastructure ([HumanLayer](https://www.humanlayer.dev/), [LangGraph `interrupt()`](https://www.langchain.com/blog/making-it-easier-to-build-human-in-the-loop-agents-with-interrupt)); post-hoc reflection (Reflexion, Self-Refine, AutoGen); anti-sycophancy ([SYCOPHANCY.md](https://sycophancy.md/)); spec-before-code ([GitHub Spec Kit](https://github.com/github/spec-kit)). SATORI is not competing with these — it complements them.
-- **Genuinely novel:** the **frame check as a formalized, mandatory pre-task step** (no academic analog found); the **integrated five-mechanism discipline as one loadable markdown** (the combination + delivery format is the gap); **reflex-capture** (no prior framework operationalizes it for agents); and **empirical measurement** of a reasoning discipline via blind-judged bake-offs.
+- **Already well-covered, lean on these:** human-in-the-loop infra ([HumanLayer](https://www.humanlayer.dev/), [LangGraph `interrupt()`](https://www.langchain.com/blog/making-it-easier-to-build-human-in-the-loop-agents-with-interrupt)); post-hoc reflection (Reflexion, Self-Refine, AutoGen); anti-sycophancy; spec-before-code ([GitHub Spec Kit](https://github.com/github/spec-kit)). SATORI complements these, it doesn't compete.
+- **Genuinely novel:** the **frame check as a formalized, mandatory pre-task step** (no academic analog found); the **integrated discipline as one loadable markdown**; **reflex-capture** for agents; **calibrated adversarial review** (CRUCIBLE); and **empirical measurement** of reasoning disciplines via blind-judged bake-offs.
 
 ---
 
 ## Origin
 
-The name comes from *satori* — the sudden insight in Zen practice, paired with *anapanasati* (mindfulness of breathing) as the seed. Inspired by Alexander Stuart's *"Attempting to teach Claude AI meditation"* (2026). The practice isn't about calm; it's about **not obeying the pull toward the first resolved answer.**
+The name comes from *satori* — the sudden insight in Zen practice — paired with *anapanasati* (mindfulness of breathing) as the seed. Inspired by Alexander Stuart's *"Attempting to teach Claude AI meditation"* (2026). The practice isn't about calm; it's about **not obeying the pull toward the first resolved answer.**
 
 The principle, in one line: *notice the pull, don't obey it.*
