@@ -1,6 +1,6 @@
-# Meditation Process — THE PAUSE (SATORI-Lite)
+# Meditation Process — THE PAUSE (SATORI)
 
-SATORI-Lite is a pre-commit reflection discipline an AI agent loads before it
+SATORI is a pre-commit reflection discipline an AI agent loads before it
 acts. It re-centers on the four moves a strong model does NOT make on its own —
 frame, pause, reproduce, reflex — and embeds the zoom discipline that keeps
 work at the right altitude (neither symptom-patching nor over-engineering).

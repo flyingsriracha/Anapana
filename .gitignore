@@ -1,9 +1,9 @@
 # Local-only working files (not part of the public repo)
 HANDOFF.md
 kaizen/
-practice/
-product/
 test_repos/
+old_versions/
+TOUCHSTONE.md
 
 # Secrets / local env — NEVER commit
 .env
