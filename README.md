@@ -1,20 +1,24 @@
 <!-- hero -->
 ![SATORI — a pre-commit discipline for AI agents](assets/satori-hero.svg)
 
-![practices](https://img.shields.io/badge/practices-SATORI_%2B_CRUCIBLE-ff6b9d?style=flat-square)
-![models](https://img.shields.io/badge/benchmarked-9_models,_blind_dual--judge-4a90e2?style=flat-square)
-![best designer](https://img.shields.io/badge/best_designer-Fable_5_19.5%2F20-fbbf24?style=flat-square)
+![practices](https://img.shields.io/badge/practices-SATORI_%2B_CRUCIBLE_%2B_TOUCHSTONE_%2B_WHETSTONE-ff6b9d?style=flat-square)
+![models](https://img.shields.io/badge/benchmarked-blind_dual--judge-4a90e2?style=flat-square)
 ![best reviewer](https://img.shields.io/badge/best_reviewer-Opus_4.8_25%2F25-9333ea?style=flat-square)
+![touchstone](https://img.shields.io/badge/TOUCHSTONE-%2B4.4%2F25_vs_baseline-2ecc71?style=flat-square)
 ![works with](https://img.shields.io/badge/works_with-any_LLM-8a99ad?style=flat-square)
 
-**ANAPANA is a set of small markdown files you give an AI agent _before_ it acts.** They make the model stop, question whether it's solving the *right* problem, check itself against reality, and hand the decision back to you — instead of confidently sprinting down the wrong path. Two disciplines, both measured against live models:
+**ANAPANA is a set of small markdown files you give an AI agent _before_ it acts.** They make the model stop, question whether it's solving the *right* problem, check itself against reality, and hand the decision back to you — instead of confidently sprinting down the wrong path. **Four disciplines that compose into one pipeline** — each measured against live models:
 
 | | For | The move it forces |
 |---|---|---|
 | 🧭 **[`SATORI.md`](SATORI.md)** | **Building** | Pause before you commit to a direction — *is this even the right problem?* |
-| 🔥 **[`CRUCIBLE.md`](CRUCIBLE.md)** | **Red-teaming** | Critique a plan/design/code adversarially — *without tunnel-visioning on attacks or drowning the signal.* |
+| 🔥 **[`CRUCIBLE.md`](CRUCIBLE.md)** | **Red-teaming** | Critique a plan/design/code adversarially — *without tunnel-visioning or drowning the signal.* |
+| 🪙 **[`TOUCHSTONE.md`](TOUCHSTONE.md)** | **Trusting tests** | Assay a green suite — *does it fail when the code is broken, or is it theater?* |
+| 🪨 **[`WHETSTONE.md`](WHETSTONE.md)** | **Writing tests** | Write a suite that bites — *oracle from the spec, not the code; prove it kills broken code.* |
 
-> **Start here:** paste [`SATORI.md`](SATORI.md) into your agent as a system prompt or per-task prefix. Reviewing someone's design? Use [`CRUCIBLE.md`](CRUCIBLE.md). That's the whole product.
+They chain in the natural order of work: **SATORI** (before you build) → **CRUCIBLE** (review the change) → **WHETSTONE** (write the tests) → **TOUCHSTONE** (assay the green before you trust it).
+
+> **Start here:** paste [`SATORI.md`](SATORI.md) into your agent as a system prompt or per-task prefix. Reviewing someone's design? Use [`CRUCIBLE.md`](CRUCIBLE.md). Trusting a test suite? [`TOUCHSTONE.md`](TOUCHSTONE.md). Writing one? [`WHETSTONE.md`](WHETSTONE.md). Use one, or run the whole pipeline.
 
 ---
 
@@ -26,9 +30,9 @@ The costly failure isn't the small wrong fix — it's the **tunnel-vision spiral
 
 ---
 
-## Two disciplines, one idea
+## Four disciplines, one idea
 
-Both files run on the same principle — *notice the pull toward the first resolved answer; don't obey it* — applied to opposite jobs.
+All four run on the same principle — *notice the pull toward the first resolved answer; don't obey it* — applied across the lifecycle. SATORI and CRUCIBLE are shown in full below; TOUCHSTONE and WHETSTONE (the test-trust pair) follow.
 
 ### 🧭 SATORI — for building
 The five moves a strong model does **not** make on its own:
@@ -63,6 +67,17 @@ flowchart LR
 ```
 
 **Whole-system frame first** (anti-tunnel) · **steelman before critique** (anti-negativity) · **blind the framing** (anti-suppression) · **ground + rank every finding** (anti-noise) · **raise scrutiny on auth/crypto/payments** (anti-blindness).
+
+### 🪙 TOUCHSTONE — for trusting tests
+A green suite is not evidence; *a suite that fails when the code is broken* is. The assay:
+
+- **Integrity gate** — was the green *forced*? (skipped tests, edited runner, loosened asserts)
+- **Name the oracle** — for each test, does the **spec** decide pass/fail, or the **code**? (code → tautology)
+- **Golden Oracle** — hand-derive one exact value from the *spec*, **grounded in reality**, not the code.
+- **Assay by mutation** — break the code; the suite must die. Report kill-rate, not coverage. The tell of a captured suite: *it stays green when you swap in the spec-correct code.*
+
+### 🪨 WHETSTONE — for writing tests
+The constructive other half — how to write a suite that bites in the first place: source the oracle from the spec (not the code), ground it in reality, see it **fail first**, cover the boundaries, mock only the I/O edge, and **prove it kills mutated code** before you trust it. Reach for it when TOUCHSTONE reveals theater — rebuild, don't patch the green.
 
 ---
 
@@ -117,6 +132,38 @@ xychart-beta
 
 ---
 
+## Does the test pair actually help? (measured)
+
+Same blind dual-judge method, now on the **test-trust pair**. **TOUCHSTONE vs a baseline that just reviews the tests** — four rounds, each a *green* suite (passing, ~100% coverage) hiding a real bug; same model in both arms, so the discipline is the only variable.
+
+| Round | Solver | Hidden bug | TOUCHSTONE | Baseline | Gap |
+|---|---|---|---:|---:|---:|
+| Obvious gamed suite | Sonnet | tautological + a skipped spec test | **24.5** | 21.0 | +3.5 |
+| Subtle (famous gotcha) | Sonnet | `round()` banker's vs spec half-up | **24.25** | 20.5 | +3.75 |
+| Subtle (famous gotcha) | Haiku | same | **24.5** | 18.5 | +6.0 |
+| Non-famous boundary | Sonnet+Haiku | tier off-by-one | **23.4** | 19.0 | +4.4 |
+
+TOUCHSTONE ranked above baseline in **all 8 judge cards, never reversed**. Its score is **model- and bug-stable (~24)**; the baseline's drops with model strength — so the discipline lifts a *weaker* model the most.
+
+**Two honest findings:**
+- **Rigor, not discovery.** A strong baseline already *finds* the bug; the entire measured gap is in *proof*. The decisive move both judges singled out every round: **mutate the code to the spec-correct version and show the suite still passes** — i.e. its oracle was the code, not the spec. A gamed suite's tell isn't that it's red; it's that it stays green for the *correct* answer too. → [`benchmarks/v9_touchstone`](benchmarks/v9_touchstone/SCORING.md).
+- **We could not manufacture a "catches what baseline misses" gap** across three bug types × two model strengths — likely a *contamination* effect (the synthetic bugs are famous patterns a strong model recalls).
+
+**The four as a system — on a real project.** We ran all four disciplines canary-style (blind solvers, no knowledge of the bugs) against a real Python project's *pre-existing* bugs — nothing planted. Each discipline owns a different **bug class**:
+
+| Bug class | Best caught by | TOUCHSTONE alone |
+|---|---|---|
+| Internal contradiction (output contradicts its own spec) | any discipline | ✓ |
+| External-reality mismatch (wrong assumption about the real world) | **SATORI** (reality-grounding) | **ratified it** |
+| Security / secret leak | **CRUCIBLE** (adversarial review) | out of scope |
+| Test theater / tautology | **TOUCHSTONE** | ✓ |
+
+On the external-reality bug, *every* test-writing arm — TOUCHSTONE included — **ratified** it, because the agents' own notion of the requirement was wrong, so their oracle mirrored the blind spot. **That's the case for the system:** a golden oracle is only as true as the spec behind it — feed it a spec that SATORI/CRUCIBLE already pressure-tested. → [`benchmarks/v10_system`](benchmarks/v10_system/SCORING.md) · [`FRAMEWORK.md`](benchmarks/v10_system/FRAMEWORK.md).
+
+> *Caveats, plainly: n=2/arm, blind dual-judge, judges are themselves models (mitigated by anonymization + spread-scoring + two judges). And the "no discovery gap" results are partly a benchmark-contamination artifact — famous bug classes a strong model recalls — so treat the scenario-shaped catch matrix as a well-grounded hypothesis pending more contamination-resistant runs. [`CANARY_METHODOLOGY`](benchmarks/v10_system/CANARY_METHODOLOGY.md).*
+
+---
+
 ## Proof in production
 
 Benchmarks are one thing; here's what the practice caught on real systems (anonymized). Each had already passed a *thorough* human-plus-agent review **before** ANAPANA ran — that's what makes them fair.
@@ -138,10 +185,12 @@ Honest negative result: we tried to make SATORI fight bias harder with a researc
 ## Use it
 
 ```
-SATORI.md      ← the practice (build) — paste into your agent's system prompt
-CRUCIBLE.md    ← the red-team practice (critique)
+SATORI.md      ← build — pause before committing to a direction
+CRUCIBLE.md    ← red-team — calibrated adversarial review
+WHETSTONE.md   ← write tests — a suite that bites, oracle from the spec
+TOUCHSTONE.md  ← trust tests — assay a green suite for theater
 report.html    ← interactive evidence report (open in any browser)
-benchmarks/    ← every round's tasks, raw model outputs, and scoring
+benchmarks/    ← every round's tasks, raw model outputs, and scoring (incl. v9 TOUCHSTONE, v10 system)
 synthesis/     ← research log, prior-art analysis, the CoT/debias writeup
 ```
 
@@ -153,6 +202,8 @@ synthesis/     ← research log, prior-art analysis, the CoT/debias writeup
 |---|---|
 | Default for any non-trivial agent task | **`SATORI.md`** |
 | Red-teaming a plan, design, or change | **`CRUCIBLE.md`** |
+| Writing tests for code that matters | **`WHETSTONE.md`** |
+| "The tests pass — can we ship?" | **`TOUCHSTONE.md`** |
 | A typo / lint / one-liner | none — let the agent work |
 
 Works with Claude / GPT / Gemini / open models. Pause-before-execute is a prompt-level contract — in auto-approve deployments it's decorative, so run interactively (or require per-tool approval) for stake-bearing work.
@@ -161,7 +212,7 @@ Works with Claude / GPT / Gemini / open models. Pause-before-execute is a prompt
 
 ## Prior art, and what's new
 
-We checked ([`synthesis/prior_art.md`](synthesis/prior_art.md)). **Well-covered, lean on it:** human-in-the-loop infra ([HumanLayer](https://www.humanlayer.dev/), [LangGraph `interrupt()`](https://www.langchain.com/blog/making-it-easier-to-build-human-in-the-loop-agents-with-interrupt)); post-hoc reflection (Reflexion, Self-Refine); spec-before-code ([Spec Kit](https://github.com/github/spec-kit)). **Genuinely new:** the **frame check** as a mandatory pre-task step (no academic analog); **reflex-capture** for agents; **calibrated adversarial review** (CRUCIBLE); and **empirical, blind-judged measurement** of reasoning disciplines across models.
+We checked ([`synthesis/prior_art.md`](synthesis/prior_art.md)). **Well-covered, lean on it:** human-in-the-loop infra ([HumanLayer](https://www.humanlayer.dev/), [LangGraph `interrupt()`](https://www.langchain.com/blog/making-it-easier-to-build-human-in-the-loop-agents-with-interrupt)); post-hoc reflection (Reflexion, Self-Refine); spec-before-code ([Spec Kit](https://github.com/github/spec-kit)); mutation testing and property-based testing as established fields (we stand on them). **Genuinely new:** the **frame check** as a mandatory pre-task step (no academic analog); **reflex-capture** for agents; **calibrated adversarial review** (CRUCIBLE); the **mutation-as-proof test assay** that catches a captured suite by its own green (TOUCHSTONE), plus the **spec-grounded Golden Oracle with a reality gate** (WHETSTONE); and **empirical, blind-judged measurement** of all of it across models.
 
 ## Origin
 

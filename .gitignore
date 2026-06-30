@@ -3,7 +3,7 @@ HANDOFF.md
 kaizen/
 test_repos/
 old_versions/
-TOUCHSTONE.md
+docs/
 
 # Secrets / local env — NEVER commit
 .env
