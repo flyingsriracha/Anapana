@@ -21,14 +21,14 @@
   <circle cx="1075" cy="170" r="6" fill="#fbbf24"/>
 
   <!-- brandmark -->
-  <text x="72" y="74" fill="#ff6b9d" font-size="15" font-weight="700" letter-spacing="4">ANAPANA · A PRE-COMMIT DISCIPLINE FOR AI AGENTS</text>
+  <text x="72" y="74" fill="#ff6b9d" font-size="15" font-weight="700" letter-spacing="4">FOUR PRE-COMMIT DISCIPLINES FOR AI AGENTS</text>
 
   <!-- title -->
-  <text x="68" y="180" fill="#e8eef5" font-size="104" font-weight="800" letter-spacing="-3">SATORI<tspan fill="#ff6b9d">.</tspan></text>
+  <text x="68" y="180" fill="#e8eef5" font-size="104" font-weight="800" letter-spacing="-3">ANAPANA<tspan fill="#ff6b9d">.</tspan></text>
 
   <!-- tagline -->
-  <text x="72" y="226" fill="#cdd6e3" font-size="27" font-weight="400">Pause · reframe · reproduce — then act.</text>
-  <text x="72" y="262" fill="#8a99ad" font-size="19">The moves a strong model doesn't make on its own — measured, not asserted.</text>
+  <text x="72" y="226" fill="#cdd6e3" font-size="27" font-weight="400">Notice the pull toward the first answer — don't obey it.</text>
+  <text x="72" y="262" fill="#8a99ad" font-size="19">Build · red-team · write tests · trust the green — measured, not asserted.</text>
 
   <!-- practice pills — four disciplines -->
   <g font-size="16" font-weight="700">

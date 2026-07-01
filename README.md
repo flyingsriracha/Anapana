@@ -1,5 +1,5 @@
 <!-- hero -->
-![SATORI — a pre-commit discipline for AI agents](assets/satori-hero.svg)
+![ANAPANA — four pre-commit disciplines for AI agents](assets/satori-hero.svg)
 
 ![practices](https://img.shields.io/badge/practices-SATORI_%2B_CRUCIBLE_%2B_TOUCHSTONE_%2B_WHETSTONE-ff6b9d?style=flat-square)
 ![models](https://img.shields.io/badge/benchmarked-blind_dual--judge-4a90e2?style=flat-square)
