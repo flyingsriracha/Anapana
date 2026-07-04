@@ -28,8 +28,10 @@ say so. Don't assay a one-off script.
 
 ## 1. Reflex (before the work)
 One line: "If I trust the green checkmark here, my confidence is ___ / 10."
-Freeze it. You will compare it to the mutation kill-rate — the only honest
-measure of whether the tests do anything. Coverage % is **not** that measure
+Freeze it. At the end you will put your **post-assay confidence** beside it — with
+the kill-rate and its survivors as the evidence. Kill-rate is the honest measure of
+whether the tests bite *on what they cover* — blind to inputs the suite never probes
+(step 5) and to a shared wrong spec (step 4's reality gate). Coverage % is **not** that measure
 (coverage is weakly correlated with fault detection — Inozemtseva & Holmes).
 Set aside any "I wrote N tests" claim: a large passing count is not rigor —
 adding tests changed the outcome in fewer than 1 in 6 measured tasks. **Count is
@@ -81,9 +83,11 @@ golden oracle ratified a real bug. Recomputing from a wrong premise just launder
 blind spot — when code and spec may share the same wrong assumption, go check reality.
 
 ## 5. Isolate, bound, relate
-Pin ONE factor at a time (zero the others so a single term is visible). Test the
-**boundaries** (the exact threshold, just-below, just-above), not just the
-extremes. Where an exact oracle is genuinely infeasible (no closed form), fall
+Check whether the **suite** probes the boundaries — the exact threshold, just-below,
+just-above — not just interior points. An untested exact-boundary is where a real bug
+hides behind a perfect kill-rate; probe it yourself with the golden oracle. Pin ONE
+factor at a time (zero the others so a single term is visible). Where an exact
+oracle is genuinely infeasible (no closed form), fall
 back to **metamorphic relations** — "if I double this input, the output must
 do X" — a real oracle that doesn't need the exact answer.
 
@@ -96,6 +100,11 @@ cosmetic constant swaps (Just et al.). A test that stays **green while the code
 is broken = a blind spot.** Report kill-rate (killed / injected); add tests
 until the survivors die. Survivors that are genuinely *equivalent* mutants (no
 behavioral change) are the only acceptable ones — name them.
+*Crowning mutation:* swap in a **spec-correct implementation** of the behavior under
+test. If the suite stays green for the *correct* code, it cannot tell right from
+wrong — the oracle is captured, the green is theater. This also exposes what
+kill-rate can't: a suite can kill 10/10 injected mutants and still miss a real bug
+living on an input it never probes.
 *Footgun:* a byte-length-identical mutation (`0.5`→`0.0`) can leave a stale
 `.pyc` that defeats CPython's (mtime,size) cache and silently runs the mutant
 later. **Isolate the bytecode cache** (`PYTHONPYCACHEPREFIX`) during the assay.
@@ -124,7 +133,7 @@ enough to start); coverage-percentage targets (measures the wrong thing). If a
 suite genuinely needs formal verification or fuzzing infra, it's bigger than a
 touchstone.
 ```
-Order of moves:  reflex → integrity gate → name the oracle → lay a Golden Oracle
+Order of moves:  triage → reflex → integrity gate → name the oracle → lay a Golden Oracle
 → isolate/bound → assay by mutation → independent eyes → disclose & verdict.
 Pairs with WHETSTONE: TOUCHSTONE assays a finished suite; WHETSTONE is how you WRITE one
 that bites. When this assay reveals theater, rebuild with WHETSTONE — don't patch the green.

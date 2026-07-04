@@ -11,7 +11,7 @@ checkmark hides it.
 > what the code **does**, not what it **should do** — and on buggy code that reflex
 > *encodes the bug as the expected value*. More than 99% of LLM-generated tests pass on
 > the original code; oracle accuracy drops below 50% once the code is buggy (the model
-> reads the bug as the spec). **"Tests pass" is not the goal. "A test that fails when —
+> reads the bug as the spec — see research record). **"Tests pass" is not the goal. "A test that fails when —
 > and only when — the code is wrong" is.** A test you have never seen fail is
 > documentation with an assertion that might itself be wrong.
 
@@ -49,21 +49,25 @@ doc/RFC verbatim, look at real data, ask a second model given only the spec). Do
 derive it from your own assumption. Recomputing "from first principles" launders a wrong
 premise. When code and spec might share the same blind spot, your oracle will too.
 
-## 3. Write it to fail first
-Red before green. Run each new test against the current implementation (or a
-deliberately broken copy) and **watch it fail for the right reason** before you trust
-it. If it's green the instant you write it, the test is wrong, the behavior already
-exists, or the assertion is vacuous — investigate; never skip the red phase. This is the
-mechanical break in the circularity loop: you cannot assert what the code does if you
-first prove the code does *not* yet do it.
-
-## 4. Hand-derive at least one exact golden value
+## 3. Hand-derive at least one exact golden value
 Trace the algorithm **by hand** on a known input — every intermediate step shown — and
 freeze the result as a literal. This is the anti-tautology anchor (shared with
 TOUCHSTONE's Golden Oracle): a frozen reference derived from *intended* behavior, so it
 catches the code's current bugs instead of enshrining them. *Independence check:* "Could
 this number be wrong identically in code and test?" If you can't trace it by hand, the
 spec is under-specified — resolve that before writing the assertion.
+
+## 4. Watch it fail — for the right reason
+Never trust a green you haven't seen red. Two cases:
+**New code:** classic red-green — write the test from the spec, watch it fail, then
+implement. **Existing code** (the usual agent case): a spec-correct test *should* pass
+— so **manufacture the red**: temporarily break the behavior under test (a one-line
+mutation) or invert the assertion, confirm the test goes red for the right reason,
+revert. A test that cannot be made to fail is theater — this is the mechanical break
+in the circularity loop. **If the test fails against the current code as-is: stop —
+that may be a real bug, not a test bug.** Re-check the golden value and the reality
+gate; if they hold, you've found a defect — report it, don't "fix" the test to match
+the code.
 
 ## 5. One behavior per test; name the behavior
 One Arrange-Act-Assert (Given-When-Then) per test: one "when," one "then." Name the test
@@ -85,8 +89,10 @@ When you can't state the exact answer but can state an invariant, write a **prop
 round-trip (encode∘decode = identity), idempotency, monotonicity, "result always within
 legal range." When you can't even state an invariant on one output, use a **metamorphic
 relation** — a required relationship between outputs of related inputs ("double the
-input → double the result"). Write at least one property test for any non-trivial pure
-function (Hypothesis `@given`); reserve example tests for specific known-important cases.
+input → double the result"). Where the function is pure and an invariant
+is crisp, one property test buys a thousand examples (Hypothesis `@given`) — don't
+force properties onto CRUD/glue; situational, not mandatory. Reserve example tests
+for specific known-important cases.
 
 ## 8. Mock only the real I/O edges
 Doubles are for the trust boundary, nothing else: network, clock, randomness,
@@ -102,7 +108,9 @@ delete a statement, and (the sharpest) **swap in the spec-correct version** — 
 a test dies for each. Report **kill-rate**, never coverage % or test count (both are
 Goodhart targets — assertion-free tests inflate them while catching nothing; mutation
 score predicts real fault detection, coverage doesn't — Just et al.; Inozemtseva &
-Holmes). A surviving mutant is a spec gap: add a test until it dies. Then run TOUCHSTONE
+Holmes). A surviving mutant is a spec gap: add a test until it dies — unless it's a genuinely
+*equivalent* mutant (no behavioral change): name those and move on; don't chase 100%.
+Then run TOUCHSTONE
 on the result as an independent assay — a different pass than the one that wrote them.
 
 ## Deliberately not in here (kept lean on purpose)
@@ -115,7 +123,7 @@ spec + signature, never the body) and an adversarial mutant-generator loop catch
 but that's heavier infrastructure than a single discipline.
 ```
 Order of moves:  triage → source the oracle from the spec → ground the spec in reality
-→ fail first → hand-derive a golden value → one behavior + name it → contract + edges
+→ hand-derive a golden value → watch it fail → one behavior + name it → contract + edges
 → properties/metamorphic → mock only I/O edges → prove it bites → hand to TOUCHSTONE.
 Pairs with TOUCHSTONE: WHETSTONE writes/grinds; TOUCHSTONE assays. Reach for WHETSTONE
 when TOUCHSTONE reveals theater — rebuild the suite, don't patch the green.
