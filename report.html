@@ -493,7 +493,7 @@
   <div class="brandmark">ANAPANA · v0.4</div>
   <h1 class="product">ANAPANA<span class="dot">.</span></h1>
   <p class="tagline">A pre-commit discipline for AI agents. Pause. Reframe. Reproduce. Then act.</p>
-  <p class="subline"><strong>Now a four-discipline system</strong> — <strong style="color:#ff6b9d">SATORI</strong> (build) · <strong style="color:#50c878">CRUCIBLE</strong> (review) · <strong style="color:#c084fc">WHETSTONE</strong> (write tests) · <strong style="color:#fbbf24">TOUCHSTONE</strong> (trust tests). <strong>What it does, shown in production first:</strong> three real field cases on live AI-agent systems — then the controlled evidence (29 agent trials across 3 benchmarks comparing <strong>Baseline</strong>, <strong style="color:var(--v1)">BREATH</strong>, <strong style="color:var(--v2)">INSIGHT</strong>, <strong style="color:var(--v3)">SATORI</strong>, <strong style="color:var(--v3lite)">SATORI-Lite</strong>), a blind-judged <strong>model head-to-head</strong>, and a <strong>test-pair benchmark</strong> (TOUCHSTONE vs baseline) below.</p>
+  <p class="subline"><strong>Four pre-commit disciplines</strong> — <strong style="color:#ff6b9d">SATORI</strong> (build) · <strong style="color:#50c878">CRUCIBLE</strong> (review) · <strong style="color:#c084fc">WHETSTONE</strong> (write tests) · <strong style="color:#fbbf24">TOUCHSTONE</strong> (trust tests) — plus <strong style="color:#f59e0b">🔄 LIANXI</strong>, the loop that runs them (experimental). <strong>What it does, shown in production first:</strong> three real field cases on live AI-agent systems — then the controlled evidence (29 agent trials across 3 benchmarks comparing <strong>Baseline</strong>, <strong style="color:var(--v1)">BREATH</strong>, <strong style="color:var(--v2)">INSIGHT</strong>, <strong style="color:var(--v3)">SATORI</strong>, <strong style="color:var(--v3lite)">SATORI-Lite</strong>), a blind-judged <strong>model head-to-head</strong>, a <strong>test-pair benchmark</strong> (TOUCHSTONE vs baseline), and a <strong>loop benchmark</strong> (LIANXI vs a bare loop) below.</p>
 
   <div class="legend-strip" style="margin-top: 24px; border:0;">
     <div class="item"><div class="swatch" style="background:var(--baseline)"></div>Baseline — no practice</div>
@@ -722,13 +722,20 @@
         <td style="padding:10px 12px;">Only as true as the spec — pair with SATORI/CRUCIBLE so the oracle isn't a shared blind spot.</td>
         <td style="padding:10px 12px;"><strong>Produce:</strong> a kill-rate + disclosed blind spots.<br><strong>Sanity-check:</strong> whether "green" earns a ship.</td>
       </tr>
+      <tr style="border-bottom:1px solid var(--border); background:color-mix(in oklab, #f59e0b 8%, transparent);">
+        <td style="padding:10px 12px;"><strong style="color:#f59e0b">🔄 LIANXI</strong> <span style="font-size:10px; background:#f59e0b; color:#161c24; padding:1px 6px; border-radius:4px; font-weight:700;">THE LOOP</span><div class="muted" style="font-size:11px;">experimental</div></td>
+        <td style="padding:10px 12px;">A long autonomous loop — <code>/loop</code>, overnight runs, "keep going until it's truly fixed."</td>
+        <td style="padding:10px 12px;">Runs the four as per-iteration kernels; a re-read ledger survives compaction; harvests buried grievances; exits only on PROVEN / STUCK / BUDGET — never on green alone, never by weakening a test.</td>
+        <td style="padding:10px 12px;">Newest, least validated: tied a bare loop on <em>outcome</em> at single-session scale; its long-horizon (cross-compaction) value is still unproven.</td>
+        <td style="padding:10px 12px;"><strong>Produce:</strong> a converged fix with an auditable ledger.<br><strong>Sanity-check:</strong> is the loop still serving the real goal?</td>
+      </tr>
       <tr style="border-bottom:1px solid var(--border);">
         <td style="padding:10px 12px;" colspan="5"><span class="muted" style="font-size:12px;"><strong>Archived development iterations:</strong> BREATH · INSIGHT · ANCHOR · LANTERN · SATORI-full were stages and bake-off variants that converged on today's single <code>SATORI.md</code> — kept for the historical record (see the lineage above and the version-evolution chart below), not for selection.</span></td>
       </tr>
     </tbody>
   </table>
   </div>
-  <p class="muted" style="margin-top:14px; font-size:12.5px;"><strong>Quick rule:</strong> <strong style="color:#ff6b9d">SATORI</strong> to build, <strong style="color:#50c878">CRUCIBLE</strong> to review, <strong style="color:#c084fc">WHETSTONE</strong> to write tests, <strong style="color:#fbbf24">TOUCHSTONE</strong> to trust them. Use one, or run the whole pipeline in order: <strong>SATORI → CRUCIBLE → WHETSTONE → TOUCHSTONE</strong>. They're complementary, not redundant — each owns a failure the others miss.</p>
+  <p class="muted" style="margin-top:14px; font-size:12.5px;"><strong>Quick rule:</strong> <strong style="color:#ff6b9d">SATORI</strong> to build, <strong style="color:#50c878">CRUCIBLE</strong> to review, <strong style="color:#c084fc">WHETSTONE</strong> to write tests, <strong style="color:#fbbf24">TOUCHSTONE</strong> to trust them. Use one, or run the whole pipeline in order: <strong>SATORI → CRUCIBLE → WHETSTONE → TOUCHSTONE</strong>. They're complementary, not redundant — each owns a failure the others miss. For a long autonomous loop, <strong style="color:#f59e0b">🔄 LIANXI</strong> runs that whole pipeline as one iteration and keeps looping until the goal is truly met (experimental — see the loop benchmark below).</p>
 </section>
 
 <section>
@@ -1010,6 +1017,13 @@
     <p>On the external-reality bug, <em>every</em> test-writing arm — TOUCHSTONE included — <strong>ratified</strong> it, because the agents' own notion of the requirement was wrong, so their golden oracle mirrored the blind spot. A golden oracle is only as true as the spec behind it — so feed it a spec that SATORI (reality-grounding) or CRUCIBLE (adversarial "is the contract itself right?") has already pressure-tested. That's the order: <strong>SATORI → CRUCIBLE → WHETSTONE → TOUCHSTONE.</strong></p>
   </div>
   <p class="muted" style="font-size:12.5px; margin-top:10px;">Caveats: n=2/arm, blind dual-judge, judges are themselves models (mitigated by anonymization + spread-scoring + two judges). The "no discovery gap" results are partly a benchmark-<strong>contamination</strong> artifact — famous bug classes a strong model recalls — so treat the scenario-shaped catch matrix as a well-grounded hypothesis pending more contamination-resistant runs. Record: <code>benchmarks/v10_system/CANARY_METHODOLOGY.md</code>.</p>
+
+  <h3 style="margin-top:28px;">🔄 LIANXI — the loop discipline (experimental)</h3>
+  <p class="muted" style="margin-bottom:14px;">The newest practice runs the other four in a loop, for <code>/loop</code> and long autonomous sessions. We canary-tested it the same way — a real multi-issue project, blind solvers, <strong>LIANXI vs a bare "keep going until it's done" loop</strong>, judged by the <em>actual code on disk</em> rather than the agents' own reports. Record: <code>benchmarks/v11_lianxi/SCORING.md</code>.</p>
+  <div class="finding-card" style="margin-top:16px;">
+    <h4>Honest result: outcome parity, a rigor edge</h4>
+    <p><strong>On a single-session loop with a strong model, LIANXI and a bare loop tied on outcome</strong> — the bare loop already framed the whole system, harvested every buried grievance to its root, wrote real tests, and gave an honest do-not-trust list (floor-at-the-ceiling, again). Where LIANXI measurably added value was <strong>rigor and auditability</strong>: it proved each test red-first (revert → red → green), ran an <strong>independent-eyes sub-agent audit that caught two real gaps the bare loop missed</strong>, verified kill-rate against the untouched baseline, and produced a verbatim-goal + grievance ledger a human can audit. One honest cost: a review sub-agent it spawned thrashed in a no-op loop before another delivered. Its core reason-for-being — resisting goal-drift across <em>compaction</em> over a long horizon — a single-session test can't reach, so that remains <strong>unproven</strong>. Shipped honestly as experimental.</p>
+  </div>
 </section>
 
 <section>

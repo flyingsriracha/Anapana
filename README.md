@@ -5,9 +5,10 @@
 ![models](https://img.shields.io/badge/benchmarked-blind_dual--judge-4a90e2?style=flat-square)
 ![best reviewer](https://img.shields.io/badge/best_reviewer-Opus_4.8_25%2F25-9333ea?style=flat-square)
 ![touchstone](https://img.shields.io/badge/TOUCHSTONE-%2B4.4%2F25_vs_baseline-2ecc71?style=flat-square)
+![loop](https://img.shields.io/badge/LIANXI-loop_discipline_(experimental)-f59e0b?style=flat-square)
 ![works with](https://img.shields.io/badge/works_with-any_LLM-8a99ad?style=flat-square)
 
-**ANAPANA is a set of small markdown files you give an AI agent _before_ it acts.** They make the model stop, question whether it's solving the *right* problem, check itself against reality, and hand the decision back to you — instead of confidently sprinting down the wrong path. **Four disciplines that compose into one pipeline** — each measured against live models:
+**ANAPANA is a set of small markdown files you give an AI agent _before_ it acts.** They make the model stop, question whether it's solving the *right* problem, check itself against reality, and hand the decision back to you — instead of confidently sprinting down the wrong path. **Four pre-commit disciplines that compose into one pipeline — plus [`LIANXI`](LIANXI.md), the loop that runs them** for long autonomous work. Each measured against live models:
 
 | | For | The move it forces |
 |---|---|---|
@@ -16,9 +17,9 @@
 | 🪙 **[`TOUCHSTONE.md`](TOUCHSTONE.md)** | **Trusting tests** | Assay a green suite — *does it fail when the code is broken, or is it theater?* |
 | 🪨 **[`WHETSTONE.md`](WHETSTONE.md)** | **Writing tests** | Write a suite that bites — *oracle from the spec, not the code; prove it kills broken code.* |
 
-They chain in the natural order of work: **SATORI** (before you build) → **CRUCIBLE** (review the change) → **WHETSTONE** (write the tests) → **TOUCHSTONE** (assay the green before you trust it).
+They chain in the natural order of work: **SATORI** (before you build) → **CRUCIBLE** (review the change) → **WHETSTONE** (write the tests) → **TOUCHSTONE** (assay the green before you trust it). And for a long-running loop (`/loop`, overnight sessions), **🔄 [`LIANXI.md`](LIANXI.md)** runs that whole pipeline as one iteration and keeps looping — with a re-read ledger, a grievance harvest, and an anti-gaming exit — until the goal is *genuinely* met. *(LIANXI is the newest and most experimental — see the honest benchmark caveat below.)*
 
-> **Start here:** paste [`SATORI.md`](SATORI.md) into your agent as a system prompt or per-task prefix. Reviewing someone's design? Use [`CRUCIBLE.md`](CRUCIBLE.md). Trusting a test suite? [`TOUCHSTONE.md`](TOUCHSTONE.md). Writing one? [`WHETSTONE.md`](WHETSTONE.md). Use one, or run the whole pipeline.
+> **Start here:** paste [`SATORI.md`](SATORI.md) into your agent as a system prompt or per-task prefix. Reviewing someone's design? Use [`CRUCIBLE.md`](CRUCIBLE.md). Trusting a test suite? [`TOUCHSTONE.md`](TOUCHSTONE.md). Writing one? [`WHETSTONE.md`](WHETSTONE.md). Running an autonomous loop? [`LIANXI.md`](LIANXI.md). Use one, or run the whole pipeline.
 
 ---
 
@@ -78,6 +79,9 @@ A green suite is not evidence; *a suite that fails when the code is broken* is. 
 
 ### 🪨 WHETSTONE — for writing tests
 The constructive other half — how to write a suite that bites in the first place: source the oracle from the spec (not the code), ground it in reality, see it **fail first**, cover the boundaries, mock only the I/O edge, and **prove it kills mutated code** before you trust it. Reach for it when TOUCHSTONE reveals theater — rebuild, don't patch the green.
+
+### 🔄 LIANXI — for running the loop *(experimental)*
+The loop discipline (练习, *practice through repetition*) — for `/loop` and long autonomous sessions. It runs the other four as per-iteration *kernels* inside one circle: **orient** wide (frame the whole system, harvest every buried user grievance as a real requirement, write the goal down verbatim), then each pass **pick one bounded item → build → check** (WHETSTONE/TOUCHSTONE on the tests; a calibrated CRUCIBLE-light red-team, not an over-defense) **→ record the honest delta** — zooming back out every few iterations. A re-read **ledger** survives context compaction; the only exits are **PROVEN / STUCK / BUDGET** — never "tests pass," and never by weakening a test to reach green (persistence pressure is *measured to increase* reward-hacking, so "almost done" is the moment of highest risk).
 
 ---
 
@@ -162,6 +166,8 @@ On the external-reality bug, *every* test-writing arm — TOUCHSTONE included �
 
 > *Caveats, plainly: n=2/arm, blind dual-judge, judges are themselves models (mitigated by anonymization + spread-scoring + two judges). And the "no discovery gap" results are partly a benchmark-contamination artifact — famous bug classes a strong model recalls — so treat the scenario-shaped catch matrix as a well-grounded hypothesis pending more contamination-resistant runs. [`CANARY_METHODOLOGY`](benchmarks/v10_system/CANARY_METHODOLOGY.md).*
 
+**Does the loop discipline (LIANXI) beat a bare loop?** We tested that too — a real multi-issue project, blind solvers, LIANXI vs a bare "keep going until it's done" loop, judged by the *actual code on disk* rather than the agents' own reports. **Honest result: on a single-session loop with a strong model, they tied on outcome** — the bare loop already framed the whole system, harvested every buried grievance to its root, and gave an honest do-not-trust list (the floor-at-the-ceiling pattern, again). Where LIANXI measurably added value was **rigor and auditability**: red-first proof that each test bites, an independent-eyes sub-agent audit that caught two real gaps the bare loop missed, and a verbatim-goal + grievance ledger a human can actually audit. Its core reason-for-being — resisting goal-drift across *compaction* over a long horizon — a single-session test can't reach, so that remains **unproven**. Shipped honestly as experimental. → [`benchmarks/v11_lianxi`](benchmarks/v11_lianxi/SCORING.md).
+
 ---
 
 ## Proof in production
@@ -189,8 +195,9 @@ SATORI.md      ← build — pause before committing to a direction
 CRUCIBLE.md    ← red-team — calibrated adversarial review
 WHETSTONE.md   ← write tests — a suite that bites, oracle from the spec
 TOUCHSTONE.md  ← trust tests — assay a green suite for theater
+LIANXI.md      ← the loop — run the four in a cycle until it's truly fixed (experimental)
 report.html    ← interactive evidence report (open in any browser)
-benchmarks/    ← every round's tasks, raw model outputs, and scoring (incl. v9 TOUCHSTONE, v10 system)
+benchmarks/    ← every round's tasks, raw model outputs, and scoring (incl. v9 TOUCHSTONE, v10 system, v11 LIANXI)
 synthesis/     ← research log, prior-art analysis, the CoT/debias writeup
 ```
 
@@ -204,6 +211,7 @@ synthesis/     ← research log, prior-art analysis, the CoT/debias writeup
 | Red-teaming a plan, design, or change | **`CRUCIBLE.md`** |
 | Writing tests for code that matters | **`WHETSTONE.md`** |
 | "The tests pass — can we ship?" | **`TOUCHSTONE.md`** |
+| A long autonomous loop / `/loop` / overnight run | **`LIANXI.md`** |
 | A typo / lint / one-liner | none — let the agent work |
 
 Works with Claude / GPT / Gemini / open models. Pause-before-execute is a prompt-level contract — in auto-approve deployments it's decorative, so run interactively (or require per-tool approval) for stake-bearing work.
