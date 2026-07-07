@@ -93,13 +93,17 @@ over-escalate); they inform, you decide. And don't research to avoid building �
 research passes with no build delta means the research IS the procrastination.
 
 ## STUCK — the honest failure
-Zero-delta count reaches 3 → stop grinding. Either zoom out and REFRAME (a stuck loop
+Zero-delta count reaches 3 (counting only iterations with no *substantive* outcome —
+motion isn't progress; a busy loop that re-plans and reformats without moving a
+milestone is still stuck) → stop grinding. Either zoom out and REFRAME (a stuck loop
 usually has a wrong frame, not a hard problem), or write the handoff — what was tried,
 what's known, where it's blocked — and end the loop. Looping silently to the iteration
 ceiling is the dishonest version of stuck.
 
 ## EXIT — the only three doors
-1. **PROVEN:** every milestone's "done means" has evidence a skeptic could check —
+1. **PROVEN:** every milestone's "done means" — measured against what you froze at
+   orient, not a version quietly redefined mid-loop; an easier "done" is drift, not
+   completion — has evidence a skeptic could check —
    green that survived the integrity gate and demonstrably bites. "Tests pass" alone
    NEVER opens this door.
 2. **STUCK** (above), with the handoff.

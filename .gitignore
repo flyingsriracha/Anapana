@@ -16,3 +16,6 @@ docs/
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# Internal colleague material — NEVER commit/publish
+From Colleague internal/
