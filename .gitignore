@@ -19,3 +19,7 @@ __pycache__/
 
 # Internal colleague material — NEVER commit/publish
 From Colleague internal/
+
+# Dev / working artifacts — not part of the public skill release
+BEHAVIORAL_TRACE.md
+linkedin/

@@ -1,0 +1,21 @@
+ANAPANA Skills — Licensing
+===========================
+
+This project is split-licensed (SPDX: MIT AND CC-BY-4.0).
+
+Copyright (c) 2026 ANAPANA authors.
+
+1. PROSE / CONTENT — the discipline text and skill instructions
+   (every SKILL.md, the README, and all Markdown documentation)
+   is licensed under the Creative Commons Attribution 4.0
+   International License (CC-BY-4.0). See LICENSE-CC-BY-4.0.
+   You may share and adapt it, including commercially, as long as
+   you give appropriate credit.
+
+2. CODE — the helper scripts (install.sh and any future scripts)
+   are licensed under the MIT License. See LICENSE-MIT.
+
+Attribution note: because installing a skill copies its files onto
+another machine (a form of distribution), the CC-BY attribution
+should travel with the content. Each SKILL.md carries a
+`license: CC-BY-4.0` field in its frontmatter for this reason.
